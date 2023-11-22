@@ -21,7 +21,9 @@ MonoBehaviour:
         IsPolygon: 0
         IsStar: 0
         ShowExitValue: 1
+        ShowInfiniteDuration: 1
         BehaviourType: 0
+        InfiniteDuration: 0
         BehaviourExitValue: 0
         patternType: 0
         Spin: 0

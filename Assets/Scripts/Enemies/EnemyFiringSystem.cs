@@ -37,6 +37,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         m_currentBehaviour = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i];
                         m_nextBehaviourIndex = i;
                         m_currentBehaviourType = EnemyProjectileSpawner.BehaviourChangeType.Life;
+                        StartCoroutine(ShootRoutine());
                         return;
                     }
                 }
@@ -94,6 +95,26 @@ public class EnemyFiringSystem : MonoBehaviour
                 m_currentBehaviour = ShootSettings.ProjectilePatterns[_newBehaviourType].ShootZones[index];
                 break;
         }
+        StartCoroutine(ShootRoutine());
         m_currentBehaviourType = _newBehaviourType;
+    }
+
+    private IEnumerator ShootRoutine()
+    {
+        EnemyProjectileSpawner.BehaviourChangeType routineType = m_currentBehaviourType;
+        if (!m_currentBehaviour.AimAtClosestPlayer)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, m_currentBehaviour.ShootRotation);
+        }
+        while (routineType == m_currentBehaviourType)
+        {
+            if (m_currentBehaviour.AimAtClosestPlayer)
+            {
+                GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
+                float angle = Mathf.Atan2(_closestPlayer.transform.position.y-transform.position.y, _closestPlayer.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle);
+            }
+            yield return new WaitForSeconds(m_currentBehaviour.SpawnFrequency);
+        }
     }
 }

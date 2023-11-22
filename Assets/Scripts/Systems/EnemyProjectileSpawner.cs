@@ -27,6 +27,7 @@ public class EnemyProjectileSpawner : ScriptableObject
 
         [Header("Pattern")]
         public PatternType patternType;
+        [HideCondition("AimAtClosestPlayer")]
         public bool Spin;
         [ShowCondition("Spin")]
         public float SpinSpeed;
@@ -52,6 +53,7 @@ public class EnemyProjectileSpawner : ScriptableObject
         public int Limbs = 3;
 
         [Space]
+        [HideCondition("Spin")]
         public bool AimAtClosestPlayer;
         [HideCondition("AimAtClosestPlayer")]
         [Range(-180, 180f)]
