@@ -15,10 +15,12 @@ public class EnemyProjectileSpawner : ScriptableObject
         [HideInInspector] public bool IsPolygon;
         [HideInInspector] public bool IsStar;
         [HideInInspector] public bool ShowExitValue;
+        [HideInInspector] public bool ShowInfiniteDuration;
 #endif
         [Header("Transition")]
         public BehaviourChangeType BehaviourType;
-
+        [ShowCondition("ShowInfiniteDuration")]
+        public bool InfiniteDuration;
         [ShowCondition("ShowExitValue")]
         [Tooltip("ALWAYS remember to order the Shoot Zones by behaviour exit time from the biggest to the smallest for Life behaviour types")]
         public float BehaviourExitValue;
@@ -81,7 +83,8 @@ public class EnemyProjectileSpawner : ScriptableObject
                 zone.IsPolygon = zone.patternType == ShootZone.PatternType.Polygon;
                 zone.IsStar = zone.patternType == ShootZone.PatternType.Star;
                 zone.BehaviourType = behaviour.Key;
-                zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time || zone.BehaviourType == BehaviourChangeType.Life;
+                zone.ShowInfiniteDuration = zone.BehaviourType == BehaviourChangeType.Time;
+                zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType == BehaviourChangeType.Life;
             }
         }
     }
