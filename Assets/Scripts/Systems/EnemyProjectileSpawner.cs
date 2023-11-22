@@ -7,7 +7,6 @@ using UnityEngine;
 public class EnemyProjectileSpawner : ScriptableObject
 {
     public ProjectileSpawnSettingsDictionnary ProjectilePatterns;
-
     [Serializable]
     public class ShootZone
     {
@@ -15,14 +14,22 @@ public class EnemyProjectileSpawner : ScriptableObject
         [HideInInspector] public bool IsCircle;
         [HideInInspector] public bool IsPolygon;
         [HideInInspector] public bool IsStar;
+        [HideInInspector] public bool ShowExitValue;
 #endif
         [Header("Transition")]
         public BehaviourChangeType BehaviourType;
+
+        [ShowCondition("ShowExitValue")]
+        [Tooltip("ALWAYS remember to order the Shoot Zones by behaviour exit time from the biggest to the smallest for Life behaviour types")]
         public float BehaviourExitValue;
 
         [Header("Pattern")]
         public PatternType patternType;
+        public bool Spin;
+        [ShowCondition("Spin")]
+        public float SpinSpeed;
 
+        [Space]
         [ShowCondition("IsCircle")]
         [Range(-180, 180f)]
         public float StartAngle;
@@ -30,14 +37,17 @@ public class EnemyProjectileSpawner : ScriptableObject
         [ShowCondition("IsCircle")]
         [Range(-180, 180f)]
         public float EndAngle;
+        [ShowCondition("IsCircle")]
+        [Min(1)]
+        public int ZoneCount =1;
 
         [ShowCondition("IsPolygon")]
         [Min(3)]
-        public int Vertices;
+        public int Vertices = 3;
 
         [ShowCondition("IsStar")]
         [Min(3)]
-        public int Limbs;
+        public int Limbs = 3;
 
         [Space]
         public bool AimAtClosestPlayer;
@@ -63,13 +73,15 @@ public class EnemyProjectileSpawner : ScriptableObject
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        foreach(ShootBehaviour behaviour in ProjectilePatterns.Values)
+        foreach(var behaviour in ProjectilePatterns)
         {
-            foreach(ShootZone zone in behaviour.ShootZones)
+            foreach(ShootZone zone in behaviour.Value.ShootZones)
             {
                 zone.IsCircle = zone.patternType == ShootZone.PatternType.Circle;
                 zone.IsPolygon = zone.patternType == ShootZone.PatternType.Polygon;
                 zone.IsStar = zone.patternType == ShootZone.PatternType.Star;
+                zone.BehaviourType = behaviour.Key;
+                zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time || zone.BehaviourType == BehaviourChangeType.Life;
             }
         }
     }

@@ -8,7 +8,7 @@ public class EntityHealthHandler : MonoBehaviour
 {
     private int m_health;
     private bool m_isInvincible = false;
-    [SerializeField] private int m_maxHealth;
+    [SerializeField] [Min(1)] private int m_maxHealth = 1;
     [NonSerialized] public UnityEvent OnHealthChanged = new();
     [NonSerialized] public UnityEvent OnMaxHealthChanged = new();
     public int Health {  get { return m_health; } 
