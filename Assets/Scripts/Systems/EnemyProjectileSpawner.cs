@@ -6,15 +6,15 @@ using UnityEngine;
 [CreateAssetMenu]
 public class EnemyProjectileSpawner : ScriptableObject
 {
-    [SerializeField] private ProjectileSpawnSettingsDictionnary ProjectilePatterns;
-    
+    public ProjectileSpawnSettingsDictionnary ProjectilePatterns;
+
     [Serializable]
     public class ShootZone
     {
 #if UNITY_EDITOR
-        public bool IsCircle;
-        public bool IsPolygon;
-        public bool IsStar;
+        [HideInInspector] public bool IsCircle;
+        [HideInInspector] public bool IsPolygon;
+        [HideInInspector] public bool IsStar;
 #endif
         [Header("Transition")]
         public BehaviourChangeType BehaviourType;
@@ -22,29 +22,25 @@ public class EnemyProjectileSpawner : ScriptableObject
 
         [Header("Pattern")]
         public PatternType patternType;
-        public float SpawnFrequency;
+        [ShowCondition("IsCircle")]
+        public float StartAngle;
+        [ShowCondition("IsCircle")]
+        public float EndAngle;
+        [ShowCondition("IsPolygon")]
+        [Min(3)]
+        public int Vertices;
+        [ShowCondition("IsStar")]
+        [Min(3)]
+        public int Limbs;
+        [Space]
+        public bool AimAtClosestPlayer;
+        [HideCondition("AimAtClosestPlayer")]
         public float ShootRotation;
-
         [Tooltip("This is the number of projectiles in an arc for a circle zone,\nOr the number of projectiles per vertice of a polygon or Star")]
         public float ProjectileCount;
+        public float SpawnFrequency;
 
-        [Header("Spawn Parameters for a Circle Pattern")]
-        //[HideCondition("!IsCircle")]
-        public float StartAngle;
-        //[HideCondition("!IsCircle")]
-        public float EndAngle;
-
-        
-        [Header("Spawn Parameters for a Polygon Pattern")]
-        [Min(3)]
-        //[HideCondition("!IsPolygon")]
-        public int Vertices;
-
-        [Header("Spawn Parameters for a Star Pattern")]
-        [Min(3)]
-        //[HideCondition("!IsStar")]
-        public int Limbs;
-
+        [Space]
         public Projectile.ProjectileParameters ProjectileParameters;
 
         public enum PatternType

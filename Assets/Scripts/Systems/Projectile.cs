@@ -15,7 +15,9 @@ public class Projectile : MonoBehaviour
         [Header("InitialParameters")]
         public float InitialVelocityStrength;
         public float InitialRotation;
+        [Space]
         public Color InitialColor;
+        [Space]
         public Vector3 InitialOffset;
         public Vector3 InitialScale;
 
@@ -23,19 +25,19 @@ public class Projectile : MonoBehaviour
         [Header("LifetimeParameters")]
         public AnimationCurve VelocityOverTime;
         public float VelocityLifetime;
-
+        [Space]
         public AnimationCurve ScaleOverTime;
         public float ScaleLifetime;
-
+        [Space]
         public Gradient ColorOverTime;
         public float ColorLifetime;
-
+        [Space]
         public AnimationCurve RotationOverTime;
         public float RotationLifetime;
-
+        [Space]
         public AnimationCurve PositionXOffsetOverTime;
         public float PositionXOffsetLifetime;
-
+        [Space]
         public AnimationCurve PositionYOffsetOverTime;
         public float PositionYOffsetLifetime;
     }
