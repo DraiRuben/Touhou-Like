@@ -22,20 +22,29 @@ public class EnemyProjectileSpawner : ScriptableObject
 
         [Header("Pattern")]
         public PatternType patternType;
+
         [ShowCondition("IsCircle")]
+        [Range(-180, 180f)]
         public float StartAngle;
+
         [ShowCondition("IsCircle")]
+        [Range(-180, 180f)]
         public float EndAngle;
+
         [ShowCondition("IsPolygon")]
         [Min(3)]
         public int Vertices;
+
         [ShowCondition("IsStar")]
         [Min(3)]
         public int Limbs;
+
         [Space]
         public bool AimAtClosestPlayer;
         [HideCondition("AimAtClosestPlayer")]
+        [Range(-180, 180f)]
         public float ShootRotation;
+
         [Tooltip("This is the number of projectiles in an arc for a circle zone,\nOr the number of projectiles per vertice of a polygon or Star")]
         public float ProjectileCount;
         public float SpawnFrequency;
