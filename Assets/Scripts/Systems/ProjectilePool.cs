@@ -5,14 +5,14 @@ using UnityEngine;
 public class ProjectilePool : MonoBehaviour
 {
     public static ProjectilePool Instance;
-    [SerializeField] private GameObject m_projectile;
+    [SerializeField] private ParticleSystem m_projectileEmitter;
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    public GameObject GetProjectile()
+    public GameObject GetProjectileEmitter()
     {
         if (transform.childCount > 0)
         {
@@ -22,7 +22,7 @@ public class ProjectilePool : MonoBehaviour
         }
         else
         {
-            GameObject _toGive = Instantiate(m_projectile);
+            GameObject _toGive = Instantiate(m_projectileEmitter.gameObject);
             return _toGive;
         }
     }

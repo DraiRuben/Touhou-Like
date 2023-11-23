@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 410030442129704639}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.0079, y: -0.035, z: 0}
+  m_LocalScale: {x: 1.5058385, y: 1.5734, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3956472812506921860}
@@ -224,7 +224,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.3625091, y: -0.87609303, z: 0.028137427}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4308903954622614761}
@@ -376,15 +376,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5332b7e28cdce7f419cbec2cc308a07f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_movementSpeed: 6
+  m_movementSpeed: 4
   m_velocityOverTime:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.1
-      inSlope: 3.0663435
-      outSlope: 3.0663435
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0

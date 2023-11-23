@@ -10,13 +10,14 @@ public class EnemyProjectileSpawner : ScriptableObject
     [Serializable]
     public class ShootZone
     {
-#if UNITY_EDITOR
+
         [HideInInspector] public bool IsCircle;
         [HideInInspector] public bool IsPolygon;
         [HideInInspector] public bool IsStar;
         [HideInInspector] public bool ShowExitValue;
         [HideInInspector] public bool ShowInfiniteDuration;
-#endif
+        [HideInInspector] public int OldZoneCount = 1;
+
         [Header("Transition")]
         public BehaviourChangeType BehaviourType;
         [ShowCondition("ShowInfiniteDuration")]
@@ -27,17 +28,13 @@ public class EnemyProjectileSpawner : ScriptableObject
 
         [Header("Pattern")]
         public PatternType patternType;
-        [HideCondition("AimAtClosestPlayer")]
-        public bool Spin;
-        [ShowCondition("Spin")]
-        public float SpinSpeed;
 
         [Space]
-        [ShowCondition("IsCircle")]
+        [HideCondition("IsStar")]
         [Range(-180, 180f)]
         public float StartAngle;
 
-        [ShowCondition("IsCircle")]
+        [HideCondition("IsStar")]
         [Range(-180, 180f)]
         public float EndAngle;
         [ShowCondition("IsCircle")]
@@ -53,6 +50,11 @@ public class EnemyProjectileSpawner : ScriptableObject
         public int Limbs = 3;
 
         [Space]
+        [HideCondition("AimAtClosestPlayer")]
+        public bool Spin;
+        [ShowCondition("Spin")]
+        public float SpinSpeed;
+        [Space]
         [HideCondition("Spin")]
         public bool AimAtClosestPlayer;
         [HideCondition("AimAtClosestPlayer")]
@@ -60,7 +62,7 @@ public class EnemyProjectileSpawner : ScriptableObject
         public float ShootRotation;
 
         [Tooltip("This is the number of projectiles in an arc for a circle zone,\nOr the number of projectiles per vertice of a polygon or Star")]
-        public float ProjectileCount;
+        public int ProjectileCount;
         public float SpawnFrequency;
 
         [Space]
@@ -72,9 +74,8 @@ public class EnemyProjectileSpawner : ScriptableObject
             Polygon,
             Star
         }
-
     }
-#if UNITY_EDITOR
+
     private void OnValidate()
     {
         foreach(var behaviour in ProjectilePatterns)
@@ -87,10 +88,24 @@ public class EnemyProjectileSpawner : ScriptableObject
                 zone.BehaviourType = behaviour.Key;
                 zone.ShowInfiniteDuration = zone.BehaviourType == BehaviourChangeType.Time;
                 zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType == BehaviourChangeType.Life;
+                if(Mathf.Abs(zone.EndAngle - zone.StartAngle) * zone.ZoneCount > 360)
+                {
+                    zone.ZoneCount = zone.OldZoneCount;
+                }
+                else
+                {
+                    zone.OldZoneCount = zone.ZoneCount;
+                }
+                if (zone.StartAngle > zone.EndAngle)
+                {
+                    float temp = zone.EndAngle;
+                    zone.EndAngle = zone.StartAngle;
+                    zone.StartAngle = temp;
+                }
             }
         }
     }
-#endif
+
     [Serializable]
     public struct ShootBehaviour
     {
