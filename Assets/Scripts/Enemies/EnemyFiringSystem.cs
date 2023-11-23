@@ -184,6 +184,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 ParticleSystem.Particle[] Particles = new ParticleSystem.Particle[particleCount];
                 Vector3 EdgePos = new();
                 Vector3 NextEdgePos = new();
+                Vector3 MedianDir = new Vector3(Mathf.Cos(angleSpan)/2, Mathf.Sin(angleSpan)/2);
                 for (int i = 0; i < verticeCount; i++)
                 {
                     if (isIncompleteAngle)
@@ -216,7 +217,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
 
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].position = EdgePos/10;
-                    Particles[i * (m_currentBehaviour.ProjectileCount - 1)].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * EdgePos;
+                    Particles[i * (m_currentBehaviour.ProjectileCount - 1)].velocity = (m_currentBehaviour.CircleCenteredVelocity?EdgePos: MedianDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength;
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -229,7 +230,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         float x = Mathf.Lerp(EdgePos.x, NextEdgePos.x, (float)(u+1) / (m_currentBehaviour.ProjectileCount -1));
                         float y = Mathf.Lerp(EdgePos.y, NextEdgePos.y, (float)(u+1) / (m_currentBehaviour.ProjectileCount -1));
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position = new Vector3(x, y)/10;
-                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position*10;
+                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].velocity = (m_currentBehaviour.CircleCenteredVelocity ? Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position*10:MedianDir) *m_currentBehaviour.ProjectileParameters.InitialVelocityStrength;
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;

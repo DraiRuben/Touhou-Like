@@ -28,7 +28,7 @@ public class EnemyProjectileSpawner : ScriptableObject
 
         [Header("Pattern")]
         public PatternType patternType;
-
+        public bool CircleCenteredVelocity;
         [Space]
         [HideCondition("IsStar")]
         [Range(-180, 180f)]
