@@ -17,20 +17,20 @@ MonoBehaviour:
     m_values:
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
-        IsPolygon: 0
+      - IsCircle: 0
+        IsPolygon: 1
         IsStar: 0
         ShowExitValue: 0
         ShowInfiniteDuration: 1
-        OldZoneCount: 2
+        OldZoneCount: 1
         BehaviourType: 0
         InfiniteDuration: 1
         BehaviourExitValue: 0
-        patternType: 0
-        StartAngle: 0
-        EndAngle: 90
-        ZoneCount: 2
-        Vertices: 0
+        patternType: 1
+        StartAngle: -180
+        EndAngle: 180
+        ZoneCount: 1
+        Vertices: 5
         Limbs: 0
         Spin: 0
         SpinSpeed: 0
