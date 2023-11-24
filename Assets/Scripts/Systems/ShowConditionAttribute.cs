@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class ShowConditionAttribute : PropertyAttribute {
+public class ShowConditionAttribute : PropertyAttribute
+{
     private readonly string _condition;
     private readonly bool _disable;
 
@@ -8,12 +9,14 @@ public class ShowConditionAttribute : PropertyAttribute {
 
     public bool Disable => _disable;
 
-    public ShowConditionAttribute(string condition, bool disable = false) {
+    public ShowConditionAttribute(string condition, bool disable = false)
+    {
         _condition = condition;
         _disable = disable;
     }
 }
-public class HideConditionAttribute : PropertyAttribute {
+public class HideConditionAttribute : PropertyAttribute
+{
     private readonly string _condition;
     private readonly bool _disable;
 
@@ -21,7 +24,8 @@ public class HideConditionAttribute : PropertyAttribute {
 
     public bool Disable => _disable;
 
-    public HideConditionAttribute(string condition, bool disable = false) {
+    public HideConditionAttribute(string condition, bool disable = false)
+    {
         _condition = condition;
         _disable = disable;
     }

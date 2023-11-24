@@ -1,12 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
-using UnityEngine.Rendering.VirtualTexturing;
-using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEngine.ParticleSystem;
 
 [RequireComponent(typeof(EntityHealthHandler))]
 public class EnemyFiringSystem : MonoBehaviour
@@ -136,7 +132,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 {
                     m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
                     //Shape Module
-                    var ShapeModule = m_usedEmitters[i].shape;
+                    ShapeModule ShapeModule = m_usedEmitters[i].shape;
                     ShapeModule.enabled = true;
                     ShapeModule.shapeType = ParticleSystemShapeType.Cone;
                     ShapeModule.radius = 0.01f;
@@ -145,14 +141,14 @@ public class EnemyFiringSystem : MonoBehaviour
                     m_usedEmitters[i].transform.position = transform.position;
 
                     //Burst Emission
-                    ParticleSystem.Burst burst = new ParticleSystem.Burst();
+                    Burst burst = new Burst();
                     burst.count = m_currentBehaviour.ProjectileCount;
                     burst.repeatInterval = m_currentBehaviour.SpawnFrequency;
                     burst.cycleCount = 0;
                     m_usedEmitters[i].emission.SetBurst(0, burst);
 
                     //Emission Module
-                    var EmissionModule = m_usedEmitters[i].emission;
+                    EmissionModule EmissionModule = m_usedEmitters[i].emission;
                     EmissionModule.rateOverDistance = 0;
                     EmissionModule.rateOverTime = 0;
 
@@ -169,22 +165,22 @@ public class EnemyFiringSystem : MonoBehaviour
                 float angle;
                 int verticeCount;
                 bool isIncompleteAngle = false;
-                if(angleSpan == 360f)
+                if (angleSpan == 360f)
                 {
                     verticeCount = m_currentBehaviour.Vertices;
                     angle = angleSpan / m_currentBehaviour.Vertices;
                 }
                 else
                 {
-                    verticeCount = m_currentBehaviour.Vertices +1;
+                    verticeCount = m_currentBehaviour.Vertices + 1;
                     isIncompleteAngle = true;
-                    angle = angleSpan / (m_currentBehaviour.Vertices-1);
+                    angle = angleSpan / (m_currentBehaviour.Vertices - 1);
                 }
                 int particleCount = verticeCount * m_currentBehaviour.ProjectileCount - verticeCount;
-                ParticleSystem.Particle[] Particles = new ParticleSystem.Particle[particleCount];
+                Particle[] Particles = new Particle[particleCount];
                 Vector3 EdgePos = new();
                 Vector3 NextEdgePos = new();
-                Vector3 MedianDir = new Vector3(Mathf.Cos(angleSpan)/2, Mathf.Sin(angleSpan)/2);
+                Vector3 MedianDir = new Vector3(Mathf.Cos(angleSpan) / 2 + Mathf.Cos(m_currentBehaviour.StartAngle), Mathf.Sin(angleSpan) / 2 + Mathf.Sin(m_currentBehaviour.StartAngle));
                 for (int i = 0; i < verticeCount; i++)
                 {
                     if (isIncompleteAngle)
@@ -192,32 +188,32 @@ public class EnemyFiringSystem : MonoBehaviour
                         if (i == verticeCount - 1)
                         {
                             EdgePos = NextEdgePos;
-                            NextEdgePos.x = Particles[0].position.x*10;
-                            NextEdgePos.y = Particles[0].position.y*10;
+                            NextEdgePos.x = Particles[0].position.x;
+                            NextEdgePos.y = Particles[0].position.y;
                         }
-                        else if(i==verticeCount - 2)
+                        else if (i == verticeCount - 2)
                         {
-                            EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad));
+                            EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
 
-                            NextEdgePos.x = Mathf.Lerp(EdgePos.x, Particles[0].position.x * 10, 0.5f);
-                            NextEdgePos.y = Mathf.Lerp(EdgePos.y, Particles[0].position.y * 10, 0.5f);
+                            NextEdgePos.x = Mathf.Lerp(EdgePos.x, Particles[0].position.x, 0.5f);
+                            NextEdgePos.y = Mathf.Lerp(EdgePos.y, Particles[0].position.y, 0.5f);
                         }
                         else
                         {
-                            NextEdgePos = new Vector3(Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad));
-                            EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad));
+                            NextEdgePos = new Vector3(Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
+                            EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
                         }
 
                     }
                     else
                     {
-                        NextEdgePos = new Vector3(Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad));
-                        EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad));
+                        NextEdgePos = new Vector3(Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
+                        EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance);
                     }
 
 
-                    Particles[i * (m_currentBehaviour.ProjectileCount - 1)].position = EdgePos/10;
-                    Particles[i * (m_currentBehaviour.ProjectileCount - 1)].velocity = (m_currentBehaviour.CircleCenteredVelocity?EdgePos: MedianDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength;
+                    Particles[i * (m_currentBehaviour.ProjectileCount - 1)].position = EdgePos;
+                    Particles[i * (m_currentBehaviour.ProjectileCount - 1)].velocity = (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance;
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                     Particles[i * (m_currentBehaviour.ProjectileCount - 1)].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -227,20 +223,23 @@ public class EnemyFiringSystem : MonoBehaviour
                     //line
                     for (int u = 0; u < m_currentBehaviour.ProjectileCount - 2; u++)
                     {
-                        float x = Mathf.Lerp(EdgePos.x, NextEdgePos.x, (float)(u+1) / (m_currentBehaviour.ProjectileCount -1));
-                        float y = Mathf.Lerp(EdgePos.y, NextEdgePos.y, (float)(u+1) / (m_currentBehaviour.ProjectileCount -1));
-                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position = new Vector3(x, y)/10;
-                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].velocity = (m_currentBehaviour.CircleCenteredVelocity ? Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position*10:MedianDir) *m_currentBehaviour.ProjectileParameters.InitialVelocityStrength;
+                        float x = Mathf.Lerp(EdgePos.x, NextEdgePos.x, (float)(u + 1) / (m_currentBehaviour.ProjectileCount - 1));
+                        float y = Mathf.Lerp(EdgePos.y, NextEdgePos.y, (float)(u + 1) / (m_currentBehaviour.ProjectileCount - 1));
+                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position = new Vector3(x, y);
+                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].velocity = (m_currentBehaviour.CircleCenteredVelocity ? Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].position : MedianDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance;
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                         Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].startColor = new Color32(255, 255, 255, 255);
-                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].rotation3D = Quaternion.Euler(90, 0, angle * i + angle * (u + 1) / (i+1)).eulerAngles;
-                    }                                                                                             
+                        Particles[u + i * (m_currentBehaviour.ProjectileCount - 1) + 1].rotation3D = Quaternion.Euler(90, 0, angle * i + angle * (u + 1) / (i + 1)).eulerAngles;
+                    }
                 }
                 SetupParticleSystemParameters(m_usedEmitters[0]);
-                var ShapeModule = m_usedEmitters[0].shape;
+                ShapeModule ShapeModule = m_usedEmitters[0].shape;
                 ShapeModule.enabled = false;
+                MainModule MainModule = m_usedEmitters[0].main;
+                MainModule.loop = false;
+                MainModule.playOnAwake = false;
                 m_usedEmitters[0].SetParticles(Particles, Particles.Length);
                 m_usedEmitters[0].Emit(Particles.Length);
                 yield return null;
@@ -250,7 +249,7 @@ public class EnemyFiringSystem : MonoBehaviour
             if (m_currentBehaviour.AimAtClosestPlayer)
             {
                 GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
-                if(_closestPlayer != null) 
+                if (_closestPlayer != null)
                 {
                     float angle = Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
                     for (int i = 0; i < m_currentBehaviour.ZoneCount; i++)
@@ -258,7 +257,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, angle);
                     }
                 }
-                
+
             }
             else
             {
@@ -272,11 +271,11 @@ public class EnemyFiringSystem : MonoBehaviour
     }
     private void StopEmission()
     {
-        if(m_usedEmitters.Count>0)
-        for(int i = 0; i < m_usedEmitters.Count; i++)
-        {
-            m_usedEmitters[i].Stop();
-        }
+        if (m_usedEmitters.Count > 0)
+            for (int i = 0; i < m_usedEmitters.Count; i++)
+            {
+                m_usedEmitters[i].Stop();
+            }
     }
     private void SetupParticleSystemParameters(ParticleSystem system)
     {
@@ -287,7 +286,7 @@ public class EnemyFiringSystem : MonoBehaviour
         particleSystemRenderer.alignment = ParticleSystemRenderSpace.Velocity;
 
         //Main Module
-        var mainModule = system.main;
+        MainModule mainModule = system.main;
         mainModule.startColor = m_currentBehaviour.ProjectileParameters.InitialColor;
         mainModule.startSize3D = true;
         mainModule.startSizeX = m_currentBehaviour.ProjectileParameters.InitialScale.x;
@@ -296,26 +295,28 @@ public class EnemyFiringSystem : MonoBehaviour
         mainModule.startSpeed = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength;
         mainModule.startColor = m_currentBehaviour.ProjectileParameters.InitialColor;
         mainModule.startRotation3D = true;
-        var RotX = mainModule.startRotationX;
+        mainModule.loop = true;
+        mainModule.playOnAwake = true;
+        MinMaxCurve RotX = mainModule.startRotationX;
         RotX.constant = 90;
 
-        var RotZ = mainModule.startRotationZ;
+        MinMaxCurve RotZ = mainModule.startRotationZ;
         RotZ.constant = m_currentBehaviour.ProjectileParameters.InitialRotation;
         mainModule.maxParticles = 1000;
         mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
 
         //Emitter shape module
-        var EmitterModule = system.shape;
+        ShapeModule EmitterModule = system.shape;
         EmitterModule.enabled = true;
 
         //Sprite Module
-        var SpriteModule = system.textureSheetAnimation;
+        TextureSheetAnimationModule SpriteModule = system.textureSheetAnimation;
         SpriteModule.enabled = true;
         SpriteModule.mode = ParticleSystemAnimationMode.Sprites;
-        SpriteModule.SetSprite(0,m_currentBehaviour.ProjectileParameters.Texture);
+        SpriteModule.SetSprite(0, m_currentBehaviour.ProjectileParameters.Texture);
 
         //Collision module
-        var CollisionModule = system.collision;
+        CollisionModule CollisionModule = system.collision;
         CollisionModule.enabled = true;
         CollisionModule.type = ParticleSystemCollisionType.World;
         CollisionModule.mode = ParticleSystemCollisionMode.Collision2D;
@@ -324,8 +325,8 @@ public class EnemyFiringSystem : MonoBehaviour
         CollisionModule.sendCollisionMessages = true;
 
         //ScaleOverLifetime
-        var ScaleModule = system.sizeOverLifetime;
-        var ScaleModuleCurves = ScaleModule.size;
+        SizeOverLifetimeModule ScaleModule = system.sizeOverLifetime;
+        MinMaxCurve ScaleModuleCurves = ScaleModule.size;
         if (m_currentBehaviour.ProjectileParameters.VariableScale)
         {
             ScaleModule.enabled = true;
@@ -341,8 +342,8 @@ public class EnemyFiringSystem : MonoBehaviour
         ScaleModule.size = ScaleModuleCurves;
 
         //RotationOverLifetime
-        var RotationModule = system.rotationOverLifetime;
-        var RotationModuleCurves = RotationModule.z;
+        RotationOverLifetimeModule RotationModule = system.rotationOverLifetime;
+        MinMaxCurve RotationModuleCurves = RotationModule.z;
         if (m_currentBehaviour.ProjectileParameters.VariableRotation)
         {
             RotationModule.enabled = true;
@@ -357,7 +358,7 @@ public class EnemyFiringSystem : MonoBehaviour
         }
 
         //ColorOverLifetime
-        var ColorModule = system.colorOverLifetime;
+        ColorOverLifetimeModule ColorModule = system.colorOverLifetime;
         if (m_currentBehaviour.ProjectileParameters.VariableColor)
         {
             ColorModule.enabled = true;
@@ -369,8 +370,8 @@ public class EnemyFiringSystem : MonoBehaviour
         }
 
         //VelocityOverLifetime
-        var VelocityModule = system.velocityOverLifetime;
-        var VelocityModuleCurves = VelocityModule.speedModifier;
+        VelocityOverLifetimeModule VelocityModule = system.velocityOverLifetime;
+        MinMaxCurve VelocityModuleCurves = VelocityModule.speedModifier;
         if (m_currentBehaviour.ProjectileParameters.VariableVelocity)
         {
             VelocityModule.enabled = true;

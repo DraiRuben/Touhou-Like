@@ -93,7 +93,7 @@ public class HideConditionPropertyDrawer : PropertyDrawer
 
         return Visibility.Hidden;
     }
-    
+
 }
 [CustomPropertyDrawer(typeof(ShowConditionAttribute))]
 public class ShowConditionPropertyDrawer : PropertyDrawer
@@ -184,24 +184,24 @@ public class ShowConditionPropertyDrawer : PropertyDrawer
 
         return Visibility.Hidden;
     }
-    
+
 }
 
 public static class PropertyDrawerExtensionMethods
 {
     public static object GetTargetObjectOfProperty(SerializedProperty prop)
     {
-        var path = prop.propertyPath.Replace(".Array.data[", "[");
+        string path = prop.propertyPath.Replace(".Array.data[", "[");
         object obj = prop.serializedObject.targetObject;
-        var tempelements = path.Split('.').ToList();
+        System.Collections.Generic.List<string> tempelements = path.Split('.').ToList();
         tempelements.RemoveAt(tempelements.Count - 1);
-        var elements = tempelements.ToArray();
-        foreach (var element in elements)
+        string[] elements = tempelements.ToArray();
+        foreach (string element in elements)
         {
             if (element.Contains("["))
             {
-                var elementName = element.Substring(0, element.IndexOf("["));
-                var index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                string elementName = element.Substring(0, element.IndexOf("["));
+                int index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
                 obj = GetValue_Imp(obj, elementName, index);
             }
             else
@@ -216,15 +216,15 @@ public static class PropertyDrawerExtensionMethods
     {
         if (source == null)
             return null;
-        var type = source.GetType();
+        Type type = source.GetType();
 
         while (type != null)
         {
-            var f = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            FieldInfo f = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             if (f != null)
                 return f.GetValue(source);
 
-            var p = type.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            PropertyInfo p = type.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (p != null)
                 return p.GetValue(source, null);
 
@@ -235,9 +235,9 @@ public static class PropertyDrawerExtensionMethods
 
     private static object GetValue_Imp(object source, string name, int index)
     {
-        var enumerable = GetValue_Imp(source, name) as System.Collections.IEnumerable;
+        System.Collections.IEnumerable enumerable = GetValue_Imp(source, name) as System.Collections.IEnumerable;
         if (enumerable == null) return null;
-        var enm = enumerable.GetEnumerator();
+        System.Collections.IEnumerator enm = enumerable.GetEnumerator();
         //while (index-- >= 0)
         //    enm.MoveNext();
         //return enm.Current;

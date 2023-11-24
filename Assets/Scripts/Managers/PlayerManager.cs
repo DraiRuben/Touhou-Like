@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,6 +20,6 @@ public class PlayerManager : MonoBehaviour
     }
     public GameObject GetClosestPlayer(Vector3 _position)
     {
-        return m_players.OrderBy(player=>Vector3.Distance(player.transform.position,_position)).ToList()[0];
+        return m_players.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
     }
 }

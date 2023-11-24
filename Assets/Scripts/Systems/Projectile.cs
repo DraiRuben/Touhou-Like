@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class Projectile
@@ -43,5 +41,5 @@ public static class Projectile
         public bool VariableRotation;
         [ShowCondition("VariableRotation")]
         public AnimationCurve RotationOverTime;
-    }    
+    }
 }

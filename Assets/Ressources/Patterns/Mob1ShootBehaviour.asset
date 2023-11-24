@@ -27,10 +27,12 @@ MonoBehaviour:
         InfiniteDuration: 1
         BehaviourExitValue: 0
         patternType: 1
-        StartAngle: -180
-        EndAngle: 180
+        CircleCenteredVelocity: 0
+        CenterDistance: 1
+        StartAngle: -82
+        EndAngle: 120
         ZoneCount: 1
-        Vertices: 5
+        Vertices: 3
         Limbs: 0
         Spin: 0
         SpinSpeed: 0
@@ -43,7 +45,7 @@ MonoBehaviour:
           Mat: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
           LifeTime: 5
           InitialVelocityStrength: 5
-          InitialRotation: 90
+          InitialRotation: 0
           InitialColor: {r: 1, g: 1, b: 1, a: 1}
           InitialScale: {x: 0.4, y: 0.4, z: 0.4}
           VariableVelocity: 0

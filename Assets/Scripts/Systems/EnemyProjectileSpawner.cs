@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,6 +28,8 @@ public class EnemyProjectileSpawner : ScriptableObject
         [Header("Pattern")]
         public PatternType patternType;
         public bool CircleCenteredVelocity;
+        [Min(.001f)]
+        public float CenterDistance = 1;
         [Space]
         [HideCondition("IsStar")]
         [Range(-180, 180f)]
@@ -39,7 +40,7 @@ public class EnemyProjectileSpawner : ScriptableObject
         public float EndAngle;
         [ShowCondition("IsCircle")]
         [Min(1)]
-        public int ZoneCount =1;
+        public int ZoneCount = 1;
 
         [ShowCondition("IsPolygon")]
         [Min(3)]
@@ -78,9 +79,9 @@ public class EnemyProjectileSpawner : ScriptableObject
 
     private void OnValidate()
     {
-        foreach(var behaviour in ProjectilePatterns)
+        foreach (KeyValuePair<BehaviourChangeType, ShootBehaviour> behaviour in ProjectilePatterns)
         {
-            foreach(ShootZone zone in behaviour.Value.ShootZones)
+            foreach (ShootZone zone in behaviour.Value.ShootZones)
             {
                 zone.IsCircle = zone.patternType == ShootZone.PatternType.Circle;
                 zone.IsPolygon = zone.patternType == ShootZone.PatternType.Polygon;
@@ -88,7 +89,7 @@ public class EnemyProjectileSpawner : ScriptableObject
                 zone.BehaviourType = behaviour.Key;
                 zone.ShowInfiniteDuration = zone.BehaviourType == BehaviourChangeType.Time;
                 zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType == BehaviourChangeType.Life;
-                if(Mathf.Abs(zone.EndAngle - zone.StartAngle) * zone.ZoneCount > 360)
+                if (Mathf.Abs(zone.EndAngle - zone.StartAngle) * zone.ZoneCount > 360)
                 {
                     zone.ZoneCount = zone.OldZoneCount;
                 }
@@ -98,9 +99,7 @@ public class EnemyProjectileSpawner : ScriptableObject
                 }
                 if (zone.StartAngle > zone.EndAngle)
                 {
-                    float temp = zone.EndAngle;
-                    zone.EndAngle = zone.StartAngle;
-                    zone.StartAngle = temp;
+                    (zone.StartAngle, zone.EndAngle) = (zone.EndAngle, zone.StartAngle);
                 }
             }
         }
@@ -120,7 +119,7 @@ public class EnemyProjectileSpawner : ScriptableObject
             RandomNonRepeating
         }
         [HideInInspector] public List<int> AlreadyChosenIndexes;
-        
+
     }
 
     public enum BehaviourChangeType
