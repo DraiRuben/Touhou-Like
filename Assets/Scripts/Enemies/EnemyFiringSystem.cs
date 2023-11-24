@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 using static UnityEngine.ParticleSystem;
 
 [RequireComponent(typeof(EntityHealthHandler))]
@@ -163,47 +165,52 @@ public class EnemyFiringSystem : MonoBehaviour
                 }
                 float angleSpan = Mathf.Abs(m_currentBehaviour.EndAngle - m_currentBehaviour.StartAngle);
                 float angle;
-                int verticeCount;
+                int verticeCount = m_currentBehaviour.Vertices;
                 bool isIncompleteAngle = false;
                 if (angleSpan == 360f)
                 {
-                    verticeCount = m_currentBehaviour.Vertices;
                     angle = angleSpan / m_currentBehaviour.Vertices;
                 }
                 else
                 {
-                    verticeCount = m_currentBehaviour.Vertices + 1;
                     isIncompleteAngle = true;
-                    angle = angleSpan / (m_currentBehaviour.Vertices - 1);
+                    angle = angleSpan / 2;
                 }
                 int particleCount = verticeCount * m_currentBehaviour.ProjectileCount - verticeCount;
                 Particle[] Particles = new Particle[particleCount];
                 Vector3 EdgePos = new();
                 Vector3 NextEdgePos = new();
-                Vector3 MedianDir = new Vector3(Mathf.Cos(angleSpan) / 2 + Mathf.Cos(m_currentBehaviour.StartAngle), Mathf.Sin(angleSpan) / 2 + Mathf.Sin(m_currentBehaviour.StartAngle));
+                Vector3 MedianDir = new Vector3(Mathf.Cos((angleSpan) * Mathf.Deg2Rad / 2), Mathf.Sin((angleSpan) * Mathf.Deg2Rad / 2));
+                float cornerAngle = (verticeCount - 2) * 180 / verticeCount;
                 for (int i = 0; i < verticeCount; i++)
                 {
                     if (isIncompleteAngle)
                     {
-                        if (i == verticeCount - 1)
+                        if (i == 0)
                         {
-                            EdgePos = NextEdgePos;
-                            NextEdgePos.x = Particles[0].position.x;
-                            NextEdgePos.y = Particles[0].position.y;
-                        }
-                        else if (i == verticeCount - 2)
-                        {
-                            EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
+                            EdgePos = new Vector3(Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
 
-                            NextEdgePos.x = Mathf.Lerp(EdgePos.x, Particles[0].position.x, 0.5f);
-                            NextEdgePos.y = Mathf.Lerp(EdgePos.y, Particles[0].position.y, 0.5f);
+                            float x1 = -EdgePos.x / 2;
+                            float y1 = -EdgePos.y / 2;
+                            float x2 = x1 * Mathf.Cos((cornerAngle/2) * Mathf.Deg2Rad) - y1 * Mathf.Sin((cornerAngle/2) * Mathf.Deg2Rad);
+                            float y2 = x1 * Mathf.Sin((cornerAngle/2) * Mathf.Deg2Rad) + y1 * Mathf.Cos((cornerAngle/2) * Mathf.Deg2Rad);
+                            NextEdgePos = new Vector3(x2 + EdgePos.x, y2 + EdgePos.y);
+
+
                         }
                         else
                         {
-                            NextEdgePos = new Vector3(Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
-                            EdgePos = new Vector3(Mathf.Cos((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
-                        }
+                            
 
+                            float x1 = EdgePos.x - NextEdgePos.x ;
+                            float y1 = EdgePos.y - NextEdgePos.y ;
+                            
+                            float x2 = x1 * Mathf.Cos(cornerAngle * Mathf.Deg2Rad) - y1 * Mathf.Sin(cornerAngle * Mathf.Deg2Rad);
+                            float y2 = x1 * Mathf.Sin(cornerAngle * Mathf.Deg2Rad) + y1 * Mathf.Cos(cornerAngle * Mathf.Deg2Rad);
+                            EdgePos = new Vector3(x2 + NextEdgePos.x, y2 + NextEdgePos.y);
+
+                            (EdgePos, NextEdgePos) = (NextEdgePos, EdgePos);
+                        }
                     }
                     else
                     {
