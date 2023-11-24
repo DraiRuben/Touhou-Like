@@ -31,7 +31,6 @@ public class EnemyProjectileSpawner : ScriptableObject
         [Min(.001f)]
         public float CenterDistance = 1;
         [Space]
-        [HideCondition("IsStar")]
         [Range(-180, 180f)]
         public float StartAngle;
 
