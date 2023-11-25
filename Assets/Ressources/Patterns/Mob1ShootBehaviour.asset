@@ -25,21 +25,22 @@ MonoBehaviour:
         OldZoneCount: 1
         BehaviourType: 0
         InfiniteDuration: 1
-        BehaviourExitValue: 0
+        BehaviourExitValue: 20
         patternType: 1
-        CircleCenteredVelocity: 1
-        CenterDistance: 2
-        StartAngle: -180
-        EndAngle: 180
+        CircleCenteredVelocity: 0
+        CenterDistance: 4
+        StartAngle: 0
+        EndAngle: 90
         ZoneCount: 1
-        Vertices: 5
+        Vertices: 3
         Limbs: 5
+        InnerPointsDist: 0.4
         Spin: 0
-        SpinSpeed: 0
-        AimAtClosestPlayer: 0
+        SpinSpeed: 10
+        AimAtClosestPlayer: 1
         ShootRotation: 0
-        ProjectileCount: 8
-        SpawnFrequency: 0.2
+        ProjectileCount: 20
+        SpawnFrequency: 1
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: cf6279a04161e0b49b9e5ff6d1d6d194, type: 3}
           Mat: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
