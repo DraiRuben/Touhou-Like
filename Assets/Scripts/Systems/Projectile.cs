@@ -34,7 +34,6 @@ public static class Projectile
         public bool VariableColor;
         [ShowCondition("VariableColor")]
         public Gradient ColorOverTime;
-
         [Space]
         public bool VariableRotation;
         public ParticleSystem.MinMaxCurve RotationOverTime;
