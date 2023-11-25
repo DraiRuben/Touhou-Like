@@ -28,7 +28,7 @@ MonoBehaviour:
         BehaviourExitValue: 20
         patternType: 1
         CircleCenteredVelocity: 0
-        CenterDistance: 4
+        CenterDistance: 1
         StartAngle: 0
         EndAngle: 90
         ZoneCount: 1
@@ -39,7 +39,7 @@ MonoBehaviour:
         SpinSpeed: 10
         AimAtClosestPlayer: 1
         ShootRotation: 0
-        ProjectileCount: 20
+        ProjectileCount: 5
         SpawnFrequency: 1
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: cf6279a04161e0b49b9e5ff6d1d6d194, type: 3}
@@ -51,36 +51,76 @@ MonoBehaviour:
           InitialScale: {x: 0.4, y: 0.4, z: 0.4}
           VariableVelocity: 0
           VelocityOverTime:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 2
-              outSlope: 2
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 0
+            m_Mode: 1
+            m_CurveMultiplier: 1
+            m_CurveMin:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            m_CurveMax:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: -0.5
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 2
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            m_ConstantMin: 0
+            m_ConstantMax: 0
           VariableScale: 0
           ScaleOverTime:
-            serializedVersion: 2
-            m_Curve: []
-            m_PreInfinity: 0
-            m_PostInfinity: 0
-            m_RotationOrder: 0
+            m_Mode: 1
+            m_CurveMultiplier: 1
+            m_CurveMin:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            m_CurveMax:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            m_ConstantMin: 0
+            m_ConstantMax: 0
           VariableColor: 0
           ColorOverTime:
             serializedVersion: 2
@@ -114,9 +154,38 @@ MonoBehaviour:
             m_NumAlphaKeys: 2
           VariableRotation: 0
           RotationOverTime:
-            serializedVersion: 2
-            m_Curve: []
-            m_PreInfinity: 0
-            m_PostInfinity: 0
-            m_RotationOrder: 0
+            m_Mode: 1
+            m_CurveMultiplier: 1
+            m_CurveMin:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            m_CurveMax:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            m_ConstantMin: 0
+            m_ConstantMax: 0
       AlreadyChosenIndexes: 

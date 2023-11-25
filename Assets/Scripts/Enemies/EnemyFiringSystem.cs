@@ -214,78 +214,35 @@ public class EnemyFiringSystem : MonoBehaviour
     private Particle[] ComputePolygon()
     {
         float angleSpan = Mathf.Abs(m_currentBehaviour.EndAngle - m_currentBehaviour.StartAngle);
-        float angle;
+        float angle = 360f / m_currentBehaviour.Vertices;
         int verticeCount = m_currentBehaviour.Vertices;
-        bool isIncompleteAngle = false;
-        if (angleSpan == 360f)
-        {
-            angle = angleSpan / m_currentBehaviour.Vertices;
-        }
-        else
-        {
-            isIncompleteAngle = true;
-            angle = angleSpan / 2;
-        }
+
         int particleCount = verticeCount * m_currentBehaviour.ProjectileCount - verticeCount;
         Particle[] Particles = new Particle[particleCount];
         Vector3 EdgePos = new();
         Vector3 NextEdgePos = new();
-        Vector3 MedianDir = new Vector3(Mathf.Cos((angleSpan) * Mathf.Deg2Rad / 2), Mathf.Sin((angleSpan) * Mathf.Deg2Rad / 2));
-        float cornerAngle = (verticeCount - 2) * 180 / verticeCount;
+
         float x1;
         float y1;
-        float x2;
-        float y2;
+
         float toRot;
         int index;
+        
+        Vector3 AimDir = new Vector3(Mathf.Cos(m_currentBehaviour.StartAngle * Mathf.Deg2Rad), Mathf.Sin(m_currentBehaviour.StartAngle * Mathf.Deg2Rad)) * m_currentBehaviour.CenterDistance;
         for (int i = 0; i < verticeCount; i++)
         {
-            if (isIncompleteAngle)
-            {
-                if (i == 0)
-                {
-                    EdgePos.Set(
-                        Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance, 
-                        Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance,0);
 
-                    x1 = -EdgePos.x / 2;
-                    y1 = -EdgePos.y / 2;
+            toRot = (angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad;
+            EdgePos.Set(
+                Mathf.Cos(toRot) * m_currentBehaviour.CenterDistance, 
+                Mathf.Sin(toRot) * m_currentBehaviour.CenterDistance, 0);
+            NextEdgePos.Set(
+                Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance, 
+                Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance, 0);
 
-                    toRot = (cornerAngle / 2) * Mathf.Deg2Rad;
-
-                    x2 = x1 * Mathf.Cos(toRot) - y1 * Mathf.Sin(toRot);
-                    y2 = x1 * Mathf.Sin(toRot) + y1 * Mathf.Cos(toRot);
-                    NextEdgePos.Set(x2 + EdgePos.x, y2 + EdgePos.y, 0);
-
-                }
-                else
-                {
-                    x1 = EdgePos.x - NextEdgePos.x;
-                    y1 = EdgePos.y - NextEdgePos.y;
-
-                    toRot = cornerAngle * Mathf.Deg2Rad;
-                    x2 = x1 * Mathf.Cos(toRot) - y1 * Mathf.Sin(toRot);
-                    y2 = x1 * Mathf.Sin(toRot) + y1 * Mathf.Cos(toRot);
-
-                    EdgePos.Set(x2 + NextEdgePos.x, y2 + NextEdgePos.y,0);
-
-                    (EdgePos, NextEdgePos) = (NextEdgePos, EdgePos);
-                }
-            }
-            else
-            {
-                toRot = (angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad;
-                EdgePos.Set(
-                    Mathf.Cos(toRot) * m_currentBehaviour.CenterDistance, 
-                    Mathf.Sin(toRot) * m_currentBehaviour.CenterDistance, 0);
-                NextEdgePos.Set(
-                    Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance, 
-                    Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance, 0);
-
-            }
             index = i * (m_currentBehaviour.ProjectileCount - 1);
             Particles[index].position = EdgePos;
-            Particles[index].velocity = (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance;
+            Particles[index].velocity = (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : AimDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance;
             Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
             Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -298,7 +255,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 index = u + i * (m_currentBehaviour.ProjectileCount - 1) + 1;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance;
+                Particles[index].velocity = (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : AimDir) * m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance;
                 Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -431,7 +388,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         
                     }
                     m_usedEmitters[0].SetParticles(_copy, _copy.Length, m_usedEmitters[0].particleCount);
-
+                    if (m_usedEmitters[0].isStopped) m_usedEmitters[0].Play();
                     yield return null;
                     continue;
                 }
@@ -494,31 +451,23 @@ public class EnemyFiringSystem : MonoBehaviour
 
         //ScaleOverLifetime
         SizeOverLifetimeModule ScaleModule = system.sizeOverLifetime;
-        MinMaxCurve ScaleModuleCurves = ScaleModule.size;
         if (m_currentBehaviour.ProjectileParameters.VariableScale)
         {
             ScaleModule.enabled = true;
-            ScaleModuleCurves.mode = ParticleSystemCurveMode.Curve;
-            ScaleModuleCurves.curveMultiplier = m_currentBehaviour.ProjectileParameters.ScaleOverTime.keys.Max(x => x.value);
-            ScaleModuleCurves.curve = m_currentBehaviour.ProjectileParameters.ScaleOverTime;
+            ScaleModule.size = m_currentBehaviour.ProjectileParameters.ScaleOverTime;
         }
         else
         {
             ScaleModule.enabled = false;
-
         }
-        ScaleModule.size = ScaleModuleCurves;
 
         //RotationOverLifetime
         RotationOverLifetimeModule RotationModule = system.rotationOverLifetime;
-        MinMaxCurve RotationModuleCurves = RotationModule.z;
         if (m_currentBehaviour.ProjectileParameters.VariableRotation)
         {
             RotationModule.enabled = true;
             RotationModule.separateAxes = true;
-            RotationModuleCurves.curveMultiplier = m_currentBehaviour.ProjectileParameters.RotationOverTime.keys.Max(x => x.value);
-            RotationModuleCurves.curve = m_currentBehaviour.ProjectileParameters.RotationOverTime;
-            RotationModule.z = RotationModuleCurves;
+            RotationModule.z = m_currentBehaviour.ProjectileParameters.RotationOverTime;
         }
         else
         {
@@ -539,13 +488,10 @@ public class EnemyFiringSystem : MonoBehaviour
 
         //VelocityOverLifetime
         VelocityOverLifetimeModule VelocityModule = system.velocityOverLifetime;
-        MinMaxCurve VelocityModuleCurves = VelocityModule.speedModifier;
         if (m_currentBehaviour.ProjectileParameters.VariableVelocity)
         {
             VelocityModule.enabled = true;
-            VelocityModuleCurves.mode = ParticleSystemCurveMode.Curve;
-            VelocityModuleCurves.curveMultiplier = m_currentBehaviour.ProjectileParameters.VelocityOverTime.keys.Max(x => x.value);
-            VelocityModuleCurves.curve = m_currentBehaviour.ProjectileParameters.VelocityOverTime;
+            VelocityModule.speedModifier = m_currentBehaviour.ProjectileParameters.VelocityOverTime;
         }
         else
         {

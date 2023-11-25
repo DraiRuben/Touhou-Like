@@ -23,14 +23,12 @@ public static class Projectile
         [Header("LifetimeParameters")]
 
         public bool VariableVelocity;
-        [ShowCondition("VariableVelocity")]
-        public AnimationCurve VelocityOverTime;
+        public ParticleSystem.MinMaxCurve VelocityOverTime;
 
         [Space]
 
         public bool VariableScale;
-        [ShowCondition("VariableScale")]
-        public AnimationCurve ScaleOverTime;
+        public ParticleSystem.MinMaxCurve ScaleOverTime;
 
         [Space]
         public bool VariableColor;
@@ -39,7 +37,6 @@ public static class Projectile
 
         [Space]
         public bool VariableRotation;
-        [ShowCondition("VariableRotation")]
-        public AnimationCurve RotationOverTime;
+        public ParticleSystem.MinMaxCurve RotationOverTime;
     }
 }

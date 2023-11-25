@@ -34,7 +34,7 @@ public class EnemyProjectileSpawner : ScriptableObject
         [Range(-180, 180f)]
         public float StartAngle;
 
-        [HideCondition("IsStar")]
+        [ShowCondition("IsCircle")]
         [Range(-180, 180f)]
         public float EndAngle;
         [ShowCondition("IsCircle")]
