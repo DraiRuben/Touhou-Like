@@ -28,7 +28,7 @@ MonoBehaviour:
         BehaviourExitValue: 0
         patternType: 1
         CircleCenteredVelocity: 1
-        CenterDistance: 3
+        CenterDistance: 2
         StartAngle: -180
         EndAngle: 180
         ZoneCount: 1

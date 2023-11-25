@@ -48,6 +48,10 @@ public class EnemyProjectileSpawner : ScriptableObject
         [ShowCondition("IsStar")]
         [Min(3)]
         public int Limbs = 3;
+        
+        [ShowCondition("IsStar")]
+        [Min(.1f)]
+        public float InnerPointsDist = 1.45f;
 
         [Space]
         [HideCondition("AimAtClosestPlayer")]
