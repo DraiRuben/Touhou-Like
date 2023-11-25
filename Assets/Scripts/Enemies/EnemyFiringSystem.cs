@@ -398,8 +398,7 @@ public class EnemyFiringSystem : MonoBehaviour
         //Render Module
         ParticleSystemRenderer particleSystemRenderer = system.GetComponent<ParticleSystemRenderer>();
         particleSystemRenderer.material = m_currentBehaviour.ProjectileParameters.Mat;
-        particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
-        particleSystemRenderer.alignment = ParticleSystemRenderSpace.World;
+
 
         //Main Module
         MainModule mainModule = system.main;

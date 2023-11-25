@@ -43,7 +43,7 @@ MonoBehaviour:
         SpawnFrequency: 0.01
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: cf6279a04161e0b49b9e5ff6d1d6d194, type: 3}
-          Mat: {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
+          Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
           LifeTime: 5
           InitialVelocityStrength: 5
           InitialRotation: 0
