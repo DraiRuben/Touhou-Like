@@ -544,15 +544,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc95cf4774700a94aacc32a433979113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TriggerNextMovementBehaviour: 0
   m_transitionType: 0
+  IsStationnaryAfterNPaths: 0
+  NPathsBeforeStationnary: 0
+  LoopPathChoices: 0
   m_pathChoices:
-  - RandomMovementPath: 0
+  - LoopThroughPath: 0
+    RegenPathWithLoop: 0
+    RandomMovementPath: 0
     PathIndex: 0
     RandomPathLength: 0
     PathLengthConditionType: 0
     PathLength: 0
-    IsStationnaryAfterNPaths: 0
-    NPathsBeforeStationnary: 0
     IsStationnaryAfterNWaypoints: 0
     NWaypointsBeforeStationnary: 0
     MovemementMultiplier:
@@ -590,6 +594,8 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_ConstantMin: 0
       m_ConstantMax: 0
+    ShowLoopPath: 0
+  ShowLoopPathChoices: 1
 --- !u!1 &2080079496
 GameObject:
   m_ObjectHideFlags: 0
