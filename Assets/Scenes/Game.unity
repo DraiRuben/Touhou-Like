@@ -483,6 +483,7 @@ GameObject:
   - component: {fileID: 1560832502}
   - component: {fileID: 1560832504}
   - component: {fileID: 1560832503}
+  - component: {fileID: 1560832505}
   m_Layer: 0
   m_Name: Mob1
   m_TagString: Untagged
@@ -531,6 +532,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_maxHealth: 5
+--- !u!114 &1560832505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560832501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc95cf4774700a94aacc32a433979113, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_transitionType: 0
+  m_pathChoices:
+  - RandomMovementPath: 0
+    PathIndex: 0
+    RandomPathLength: 0
+    PathLengthConditionType: 0
+    PathLength: 0
+    IsStationnaryAfterNPaths: 0
+    NPathsBeforeStationnary: 0
+    IsStationnaryAfterNWaypoints: 0
+    NWaypointsBeforeStationnary: 0
+    MovemementMultiplier:
+      m_Mode: 0
+      m_CurveMultiplier: 0
+      m_CurveMin:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_CurveMax:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_ConstantMin: 0
+      m_ConstantMax: 0
 --- !u!1 &2080079496
 GameObject:
   m_ObjectHideFlags: 0

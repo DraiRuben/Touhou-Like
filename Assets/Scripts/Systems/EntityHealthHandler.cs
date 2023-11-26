@@ -8,6 +8,7 @@ public class EntityHealthHandler : MonoBehaviour
     private bool m_isInvincible = false;
     [SerializeField][Min(1)] private int m_maxHealth = 1;
     [NonSerialized] public UnityEvent OnHealthChanged = new();
+    [NonSerialized] public UnityEvent OnDeath = new();
     [NonSerialized] public UnityEvent OnMaxHealthChanged = new();
     public int Health
     {
@@ -22,7 +23,10 @@ public class EntityHealthHandler : MonoBehaviour
                     gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
                     Invoke(nameof(SetVulnerable), 1f);
                 }
-                OnHealthChanged.Invoke();
+                if(m_health>0)
+                    OnHealthChanged.Invoke();
+                else
+                    OnDeath.Invoke();
             }
         }
     }

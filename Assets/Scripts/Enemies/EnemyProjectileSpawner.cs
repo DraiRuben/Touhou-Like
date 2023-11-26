@@ -9,14 +9,14 @@ public class EnemyProjectileSpawner : ScriptableObject
     [Serializable]
     public class ShootZone
     {
-
+#if UNITY_EDITOR
         [HideInInspector] public bool IsCircle;
         [HideInInspector] public bool IsPolygon;
         [HideInInspector] public bool IsStar;
         [HideInInspector] public bool ShowExitValue;
         [HideInInspector] public bool ShowInfiniteDuration;
         [HideInInspector] public int OldZoneCount = 1;
-
+#endif
         [Header("Transition")]
         public BehaviourChangeType BehaviourType;
         [ShowCondition("ShowInfiniteDuration")]
@@ -79,7 +79,7 @@ public class EnemyProjectileSpawner : ScriptableObject
             Star
         }
     }
-
+#if UNITY_EDITOR
     private void OnValidate()
     {
         foreach (KeyValuePair<BehaviourChangeType, ShootBehaviour> behaviour in ProjectilePatterns)
@@ -107,7 +107,7 @@ public class EnemyProjectileSpawner : ScriptableObject
             }
         }
     }
-
+#endif
     [Serializable]
     public struct ShootBehaviour
     {

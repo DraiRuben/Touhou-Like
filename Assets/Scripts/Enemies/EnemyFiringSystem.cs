@@ -20,6 +20,7 @@ public class EnemyFiringSystem : MonoBehaviour
     {
         m_healthComp = GetComponent<EntityHealthHandler>();
         m_healthComp.OnHealthChanged.AddListener(() => IsInPriorityShootingBehaviour = true);
+        m_healthComp.OnDeath.AddListener(() => IsInPriorityShootingBehaviour = true);
         m_transform = transform;
     }
     private void Start()
@@ -122,6 +123,10 @@ public class EnemyFiringSystem : MonoBehaviour
                 for (int i = m_usedEmitters.Count; i < m_currentBehaviour.ZoneCount; i++)
                     m_usedEmitters.Add(ProjectilePool.Instance.GetProjectileEmitter().GetComponent<ParticleSystem>());
             }
+            else if (m_usedEmitters.Count > m_currentBehaviour.ZoneCount)
+            {
+                ReturnUnsusedSystem(m_currentBehaviour.ZoneCount);
+            }
             for (int i = 0; i < m_currentBehaviour.ZoneCount; i++)
             {
                 m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
@@ -163,7 +168,10 @@ public class EnemyFiringSystem : MonoBehaviour
             {
                 m_usedEmitters.Add(ProjectilePool.Instance.GetProjectileEmitter().GetComponent<ParticleSystem>());
             }
-
+            else if (m_usedEmitters.Count > 1)
+            {
+                ReturnUnsusedSystem(1);
+            }
             SetupParticleSystemParameters(m_usedEmitters[0]);
             Particle[] Particles = ComputePolygon();
 
@@ -185,7 +193,10 @@ public class EnemyFiringSystem : MonoBehaviour
             {
                 m_usedEmitters.Add(ProjectilePool.Instance.GetProjectileEmitter().GetComponent<ParticleSystem>());
             }
-
+            else if (m_usedEmitters.Count > 1)
+            {
+                ReturnUnsusedSystem(1);
+            }
             SetupParticleSystemParameters(m_usedEmitters[0]);
 
             Particle[] Particles = ComputeStar();
@@ -217,6 +228,14 @@ public class EnemyFiringSystem : MonoBehaviour
             {
                 m_usedEmitters[i].Stop();
             }
+    }
+    //called on enemy death or pattern change
+    private void ReturnUnsusedSystem(int usedSystems)
+    {
+        for(int i= usedSystems; i < m_usedEmitters.Count; i++)
+        {
+            ProjectilePool.Instance.ReturnToPool(m_usedEmitters[i].gameObject);
+        }
     }
     private Particle[] ComputePolygon()
     {
