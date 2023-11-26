@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,6 +125,9 @@ public class EnemyFiringSystem : MonoBehaviour
             for (int i = 0; i < m_currentBehaviour.ZoneCount; i++)
             {
                 m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
+
+                SetupParticleSystemParameters(m_usedEmitters[i]);
+
                 //Shape Module
                 ShapeModule ShapeModule = m_usedEmitters[i].shape;
                 ShapeModule.enabled = true;
@@ -144,7 +148,12 @@ public class EnemyFiringSystem : MonoBehaviour
                 EmissionModule EmissionModule = m_usedEmitters[i].emission;
                 EmissionModule.rateOverDistance = 0;
                 EmissionModule.rateOverTime = 0;
-                SetupParticleSystemParameters(m_usedEmitters[i]);
+
+                ParticleSystemRenderer particleSystemRenderer = m_usedEmitters[i].GetComponent<ParticleSystemRenderer>();
+                particleSystemRenderer.alignment = ParticleSystemRenderSpace.Velocity;
+                particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+                particleSystemRenderer.sortMode = ParticleSystemSortMode.OldestInFront;
+
                 StartCoroutine(EmissionRoutine());
             }
         }
@@ -245,6 +254,8 @@ public class EnemyFiringSystem : MonoBehaviour
             Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[index].startColor = UnityEngine.Color.white;
+            Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(EdgePos.y, EdgePos.x));
+
 
             for (int u = 0; u < m_currentBehaviour.ProjectileCount - 2; u++)
             {
@@ -258,6 +269,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
+                Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1,x1));
             }
         }
         return Particles;
@@ -299,6 +311,7 @@ public class EnemyFiringSystem : MonoBehaviour
             Particles[firstCornerIndex].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[firstCornerIndex].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[firstCornerIndex].startColor = UnityEngine.Color.white;
+            Particles[firstCornerIndex].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(EdgePos.y, EdgePos.x));
 
             for (int u = 1; u < m_currentBehaviour.ProjectileCount - 1; u++)
             {
@@ -312,6 +325,8 @@ public class EnemyFiringSystem : MonoBehaviour
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
+                Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
+
             }
             for (int u = 0; u < m_currentBehaviour.ProjectileCount - 1; u++)
             {
@@ -325,6 +340,8 @@ public class EnemyFiringSystem : MonoBehaviour
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
+                Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
+
             }
             for (int u = 0; u < m_currentBehaviour.ProjectileCount - 2; u++)
             {
@@ -338,6 +355,8 @@ public class EnemyFiringSystem : MonoBehaviour
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
+                Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
+
             }
 
         }
@@ -380,6 +399,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 {
                     Vector3 newPos = _copy[i].position.x * m_usedEmitters[0].transform.right + _copy[i].position.y * m_usedEmitters[0].transform.up;
                     _copy[i].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? newPos : m_usedEmitters[0].transform.right);
+                    _copy[i].rotation3D = new(0, 0,Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
                     newPos += m_usedEmitters[0].transform.position;
                     _copy[i].position = new(newPos.x, newPos.y, 0);
 
@@ -398,7 +418,9 @@ public class EnemyFiringSystem : MonoBehaviour
         //Render Module
         ParticleSystemRenderer particleSystemRenderer = system.GetComponent<ParticleSystemRenderer>();
         particleSystemRenderer.material = m_currentBehaviour.ProjectileParameters.Mat;
-
+        particleSystemRenderer.alignment = ParticleSystemRenderSpace.Facing;
+        particleSystemRenderer.renderMode = ParticleSystemRenderMode.Mesh;
+        particleSystemRenderer.sortMode = ParticleSystemSortMode.None;
 
         //Main Module
         MainModule mainModule = system.main;
@@ -416,7 +438,7 @@ public class EnemyFiringSystem : MonoBehaviour
         mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
 
         MinMaxCurve RotZ = mainModule.startRotationZ;
-        RotZ.constant = m_currentBehaviour.ProjectileParameters.InitialRotation;
+        RotZ.constant = m_currentBehaviour.ProjectileParameters.InitialRotation*Mathf.Deg2Rad;
         mainModule.startRotationZ = RotZ;
 
         //Emitter shape module
