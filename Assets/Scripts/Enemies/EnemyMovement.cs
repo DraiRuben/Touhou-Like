@@ -28,7 +28,10 @@ public class EnemyMovement : MonoBehaviour
         m_weapon = GetComponent<EnemyFiringSystem>();
         m_rb = GetComponent<Rigidbody2D>();
     }
-
+    private void Start()
+    {
+        StartCoroutine(Movement());
+    }
     private IEnumerator Movement()
     {
         List<Transform> Waypoints = GetWaypoints();
@@ -38,44 +41,81 @@ public class EnemyMovement : MonoBehaviour
         int visitedPathsCount = 0;
         int visitedWaypointsCount = 0;
         int currentWaypointIndex = 0;
+        bool waitForNext = false;
+        Vector2 MovementVector = currentWaypoint -(Vector2)transform.position;
         while (true)
         {
-
-            timer += Time.fixedDeltaTime;
-            if (Vector2.Distance(transform.position, currentWaypoint) < 0.1f || TriggerNextMovementBehaviour)
+            if (!waitForNext || TriggerNextMovementBehaviour)
             {
-                currentWaypointIndex++;
-                visitedWaypointsCount++;
-                if (currentWaypointIndex >= Waypoints.Count || TriggerNextMovementBehaviour) //finished path
+                m_rb.velocity = MovementVector.normalized
+                * (m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.mode == ParticleSystemCurveMode.Constant ? m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.constant : m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.curve.Evaluate(timer));
+                timer += Time.fixedDeltaTime;
+                if (Vector2.Distance(transform.position, currentWaypoint) < 0.1f || TriggerNextMovementBehaviour)
                 {
-                    //if we didn't reach the N waypoints count limit or need to trigger the next behaviour at all costs
-                    if (((!m_pathChoices[m_currentPathChoiceIndex].IsStationnaryAfterNWaypoints || visitedWaypointsCount <m_pathChoices[m_currentPathChoiceIndex].NWaypointsBeforeStationnary)&& m_pathChoices[m_currentPathChoiceIndex].LoopThroughPath)
-                        || TriggerNextMovementBehaviour)
+                    timer = 0;
+                    visitedWaypointsCount++;
+                    m_rb.velocity = Vector2.zero;
+                    if (!TriggerNextMovementBehaviour && Waypoints.Count > 1 && currentWaypointIndex<Waypoints.Count-1)
                     {
-                        currentWaypointIndex = 0;
-                        visitedPathsCount++;
-                        //if we didn't reach the N path count limit or need to trigger the next behaviour at all costs
-                        if((!IsStationnaryAfterNPaths || visitedPathsCount < NPathsBeforeStationnary )|| TriggerNextMovementBehaviour)
+                        currentWaypointIndex++;
+                        currentWaypoint = Waypoints[currentWaypointIndex].position;
+                        MovementVector = currentWaypoint - (Vector2)transform.position;
+                        continue;
+                    }
+                    waitForNext = true;
+                    
+                    if (Waypoints.Count == 1 || currentWaypointIndex >= Waypoints.Count-1 || TriggerNextMovementBehaviour) //finished path
+                    {
+                        //if we didn't reach the N waypoints count limit or need to trigger the next behaviour at all costs
+                        if (((!m_pathChoices[m_currentPathChoiceIndex].IsStationnaryAfterNWaypoints || visitedWaypointsCount < m_pathChoices[m_currentPathChoiceIndex].NWaypointsBeforeStationnary) && m_pathChoices[m_currentPathChoiceIndex].LoopThroughPath)
+                            || (TriggerNextMovementBehaviour && m_pathChoices[m_currentPathChoiceIndex].RegenPathWithLoop))
                         {
-                            if(m_currentPathChoiceIndex+1 >= Waypoints.Count && LoopPathChoices)
+                            TriggerNextMovementBehaviour = false;
+                            visitedPathsCount++;
+                            waitForNext = false;
+                            if (m_pathChoices[m_currentPathChoiceIndex].RegenPathWithLoop)
                             {
-                                m_currentPathChoiceIndex = 0;
+                                Waypoints = GetWaypoints();
+                            }
+                        }
+                        //if we didn't reach the N path count limit or need to trigger the next behaviour at all costs
+                        if ((!IsStationnaryAfterNPaths || visitedPathsCount < NPathsBeforeStationnary) || TriggerNextMovementBehaviour)
+                        {
+                            visitedPathsCount++;
+                            waitForNext = false;
+                            currentWaypointIndex = 0;
+                            if (m_currentPathChoiceIndex + 1 >= m_pathChoices.Count)
+                            {
+                                if (!TriggerNextMovementBehaviour && LoopPathChoices)
+                                {
+                                    m_currentPathChoiceIndex = 0;
+                                }
+                                else if (TriggerNextMovementBehaviour)
+                                {
+                                    m_currentPathChoiceIndex++;
+                                    m_currentPathChoiceIndex = m_currentPathChoiceIndex%m_pathChoices.Count;
+                                    Waypoints = GetWaypoints();
+                                }
+                                else
+                                {
+                                    //we finished reading all paths and can't loop, so we don't need to run the coroutine anymore
+                                    yield break;
+                                }
+                                
                             }
                             else
                             {
-                                //we finished reading all paths and can't loop, so we don't need to run the coroutine anymore
-                                yield break;
+                                TriggerNextMovementBehaviour = false;
+                                m_currentPathChoiceIndex++;
+                                Waypoints = GetWaypoints();
                             }
                         }
-                        if (m_pathChoices[m_currentPathChoiceIndex].RegenPathWithLoop)
-                        {
-                            m_currentPathChoiceIndex++;
-                            Waypoints = GetWaypoints();
-                        }
                     }
+                    currentWaypoint = Waypoints[currentWaypointIndex].position;
+                    MovementVector = currentWaypoint - (Vector2)transform.position;
                 }
-                currentWaypoint = Waypoints[currentWaypointIndex].position;
             }
+            
             yield return new WaitForFixedUpdate();
         }
     }

@@ -112,10 +112,6 @@ public class EnemyFiringSystem : MonoBehaviour
     private IEnumerator ShootRoutine()
     {
         StopEmission();
-        if (!m_currentBehaviour.AimAtClosestPlayer)
-        {
-            m_transform.rotation = Quaternion.Euler(0, 0, m_currentBehaviour.ShootRotation);
-        }
         if (m_currentBehaviour.patternType == EnemyProjectileSpawner.ShootZone.PatternType.Circle)
         {
             if (m_currentBehaviour.ZoneCount > m_usedEmitters.Count)
