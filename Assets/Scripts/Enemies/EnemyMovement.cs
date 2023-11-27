@@ -35,14 +35,15 @@ public class EnemyMovement : MonoBehaviour
     private IEnumerator Movement()
     {
         List<Transform> Waypoints = GetWaypoints();
-        if (Waypoints == null || Waypoints.Count<=0) yield break;
+        if (Waypoints == null || Waypoints.Count <= 0) yield break;
         Vector2 currentWaypoint = Waypoints[0].position;
         float timer = 0;
         int visitedPathsCount = 0;
         int visitedWaypointsCount = 0;
         int currentWaypointIndex = 0;
         bool waitForNext = false;
-        Vector2 MovementVector = currentWaypoint -(Vector2)transform.position;
+        bool reachedWaypointsLimit = false;
+        Vector2 MovementVector = currentWaypoint - (Vector2)transform.position;
         while (true)
         {
             if (!waitForNext || TriggerNextMovementBehaviour)
@@ -53,9 +54,11 @@ public class EnemyMovement : MonoBehaviour
                 if (Vector2.Distance(transform.position, currentWaypoint) < 0.1f || TriggerNextMovementBehaviour)
                 {
                     timer = 0;
-                    visitedWaypointsCount++;
+                    if (!TriggerNextMovementBehaviour)
+                        visitedWaypointsCount++;
                     m_rb.velocity = Vector2.zero;
-                    if (!TriggerNextMovementBehaviour && Waypoints.Count > 1 && currentWaypointIndex<Waypoints.Count-1)
+                    reachedWaypointsLimit = !(!m_pathChoices[m_currentPathChoiceIndex].IsStationnaryAfterNWaypoints || visitedWaypointsCount < m_pathChoices[m_currentPathChoiceIndex].NWaypointsBeforeStationnary);
+                    if (!reachedWaypointsLimit && !TriggerNextMovementBehaviour && Waypoints.Count > 1 && currentWaypointIndex < Waypoints.Count - 1)
                     {
                         currentWaypointIndex++;
                         currentWaypoint = Waypoints[currentWaypointIndex].position;
@@ -63,11 +66,12 @@ public class EnemyMovement : MonoBehaviour
                         continue;
                     }
                     waitForNext = true;
-                    
-                    if (Waypoints.Count == 1 || currentWaypointIndex >= Waypoints.Count-1 || TriggerNextMovementBehaviour) //finished path
+
+                    if (Waypoints.Count == 1 || currentWaypointIndex >= Waypoints.Count - 1 || TriggerNextMovementBehaviour) //finished path
                     {
+
                         //if we didn't reach the N waypoints count limit or need to trigger the next behaviour at all costs
-                        if (((!m_pathChoices[m_currentPathChoiceIndex].IsStationnaryAfterNWaypoints || visitedWaypointsCount < m_pathChoices[m_currentPathChoiceIndex].NWaypointsBeforeStationnary) && m_pathChoices[m_currentPathChoiceIndex].LoopThroughPath)
+                        if ((!reachedWaypointsLimit && m_pathChoices[m_currentPathChoiceIndex].LoopThroughPath)
                             || (TriggerNextMovementBehaviour && m_pathChoices[m_currentPathChoiceIndex].RegenPathWithLoop))
                         {
                             TriggerNextMovementBehaviour = false;
@@ -76,12 +80,14 @@ public class EnemyMovement : MonoBehaviour
                             if (m_pathChoices[m_currentPathChoiceIndex].RegenPathWithLoop)
                             {
                                 Waypoints = GetWaypoints();
+                                continue;
                             }
                         }
                         //if we didn't reach the N path count limit or need to trigger the next behaviour at all costs
-                        if ((!IsStationnaryAfterNPaths || visitedPathsCount < NPathsBeforeStationnary) || TriggerNextMovementBehaviour)
+                        if ((!IsStationnaryAfterNPaths || ++visitedPathsCount < NPathsBeforeStationnary))
                         {
                             visitedPathsCount++;
+                            visitedWaypointsCount = 0;
                             waitForNext = false;
                             currentWaypointIndex = 0;
                             if (m_currentPathChoiceIndex + 1 >= m_pathChoices.Count)
@@ -93,7 +99,7 @@ public class EnemyMovement : MonoBehaviour
                                 else if (TriggerNextMovementBehaviour)
                                 {
                                     m_currentPathChoiceIndex++;
-                                    m_currentPathChoiceIndex = m_currentPathChoiceIndex%m_pathChoices.Count;
+                                    m_currentPathChoiceIndex %= m_pathChoices.Count;
                                     Waypoints = GetWaypoints();
                                 }
                                 else
@@ -101,7 +107,6 @@ public class EnemyMovement : MonoBehaviour
                                     //we finished reading all paths and can't loop, so we don't need to run the coroutine anymore
                                     yield break;
                                 }
-                                
                             }
                             else
                             {
@@ -115,7 +120,6 @@ public class EnemyMovement : MonoBehaviour
                     MovementVector = currentWaypoint - (Vector2)transform.position;
                 }
             }
-            
             yield return new WaitForFixedUpdate();
         }
     }
@@ -124,7 +128,7 @@ public class EnemyMovement : MonoBehaviour
         PathChoice currentPath = m_pathChoices[m_currentPathChoiceIndex];
         if (currentPath.RandomMovementPath)
         {
-            if(currentPath.RandomPathLength)
+            if (currentPath.RandomPathLength)
                 return EnemyWaypointManager.Instance.GetRandomPath();
             else
                 return EnemyWaypointManager.Instance.GetRandomPath(currentPath.PathLength, currentPath.PathLengthConditionType);
@@ -142,7 +146,7 @@ public class EnemyMovement : MonoBehaviour
         [ShowCondition("LoopThroughPath")] public bool RegenPathWithLoop;
 
         public bool RandomMovementPath;
-        [HideCondition("RandomMovementPath")]public int PathIndex;
+        [HideCondition("RandomMovementPath")] public int PathIndex;
 
         [Space]
         public bool RandomPathLength;
@@ -174,14 +178,14 @@ public class EnemyMovement : MonoBehaviour
     private void OnValidate()
     {
         ShowLoopPathChoices = m_transitionType == PathTransitionType.Automatic;
-        if(m_transitionType == PathTransitionType.Automatic)
+        if (m_transitionType == PathTransitionType.Automatic)
         {
             IsStationnaryAfterNPaths = false;
         }
-        for(int i = 0; i < m_pathChoices.Count; i++)
+        for (int i = 0; i < m_pathChoices.Count; i++)
         {
             m_pathChoices[i].ShowLoopPath = m_transitionType == PathTransitionType.Triggered;
-            if(m_transitionType == PathTransitionType.Automatic)
+            if (m_transitionType == PathTransitionType.Automatic)
             {
                 m_pathChoices[i].LoopThroughPath = false;
             }

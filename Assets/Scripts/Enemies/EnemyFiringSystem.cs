@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -228,7 +227,7 @@ public class EnemyFiringSystem : MonoBehaviour
     //called on enemy death or pattern change
     private void ReturnUnsusedSystem(int usedSystems)
     {
-        for(int i= usedSystems; i < m_usedEmitters.Count; i++)
+        for (int i = usedSystems; i < m_usedEmitters.Count; i++)
         {
             ProjectilePool.Instance.ReturnToPool(m_usedEmitters[i].gameObject);
         }
@@ -284,7 +283,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
-                Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1,x1));
+                Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
             }
         }
         return Particles;
@@ -414,7 +413,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 {
                     Vector3 newPos = _copy[i].position.x * m_usedEmitters[0].transform.right + _copy[i].position.y * m_usedEmitters[0].transform.up;
                     _copy[i].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? newPos : m_usedEmitters[0].transform.right);
-                    _copy[i].rotation3D = new(0, 0,Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                    _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
                     newPos += m_usedEmitters[0].transform.position;
                     _copy[i].position = new(newPos.x, newPos.y, 0);
 
@@ -453,7 +452,7 @@ public class EnemyFiringSystem : MonoBehaviour
         mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
 
         MinMaxCurve RotZ = mainModule.startRotationZ;
-        RotZ.constant = m_currentBehaviour.ProjectileParameters.InitialRotation*Mathf.Deg2Rad;
+        RotZ.constant = m_currentBehaviour.ProjectileParameters.InitialRotation * Mathf.Deg2Rad;
         mainModule.startRotationZ = RotZ;
 
         //Emitter shape module

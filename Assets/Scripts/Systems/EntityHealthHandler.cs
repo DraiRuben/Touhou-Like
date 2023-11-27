@@ -23,7 +23,7 @@ public class EntityHealthHandler : MonoBehaviour
                     gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
                     Invoke(nameof(SetVulnerable), 1f);
                 }
-                if(m_health>0)
+                if (m_health > 0)
                     OnHealthChanged.Invoke();
                 else
                     OnDeath.Invoke();

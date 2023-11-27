@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,7 +24,7 @@ public class EnemyWaypointManager : MonoBehaviour
             return Waypoints[index].points;
         else return null;
     }
-    public List<Transform> GetPath(int pathIndex,int pathLength, PathLengthConditionType conditionType = PathLengthConditionType.Equal)
+    public List<Transform> GetPath(int pathIndex, int pathLength, PathLengthConditionType conditionType = PathLengthConditionType.Equal)
     {
         List<WayPointsHolder> validPaths = GetValidPaths(pathLength, conditionType);
         if (validPaths.Count > 0 && pathIndex < validPaths.Count)
@@ -44,24 +43,27 @@ public class EnemyWaypointManager : MonoBehaviour
     }
     private List<WayPointsHolder> GetValidPaths(int pathLength, PathLengthConditionType conditionType = PathLengthConditionType.Equal)
     {
+
         switch (conditionType)
         {
             case PathLengthConditionType.Equal:
                 return Waypoints.Where(x => x.points.Count == pathLength).ToList();
-            case PathLengthConditionType.SuperiorStrict: 
+            case PathLengthConditionType.SuperiorStrict:
                 return Waypoints.Where(x => x.points.Count > pathLength).ToList();
             case PathLengthConditionType.InferiorStrict:
                 return Waypoints.Where(x => x.points.Count < pathLength).ToList();
+            default:
+                break;
         }
         return null;
     }
     public List<Transform> GetRandomPath(int pathLength, PathLengthConditionType conditionType = PathLengthConditionType.Equal)
     {
-        List<WayPointsHolder> validPaths = GetValidPaths(pathLength,conditionType);
+        List<WayPointsHolder> validPaths = GetValidPaths(pathLength, conditionType);
 
-        if(validPaths.Count>0)
+        if (validPaths.Count > 0)
             return validPaths[UnityEngine.Random.Range(0, validPaths.Count)].points;
-        else 
+        else
             return null;
     }
     public enum PathLengthConditionType

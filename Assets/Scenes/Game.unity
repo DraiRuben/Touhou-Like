@@ -898,9 +898,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TriggerNextMovementBehaviour: 0
-  m_transitionType: 0
-  IsStationnaryAfterNPaths: 0
-  NPathsBeforeStationnary: 0
+  m_transitionType: 1
+  IsStationnaryAfterNPaths: 1
+  NPathsBeforeStationnary: 2
   LoopPathChoices: 1
   m_pathChoices:
   - LoopThroughPath: 0
@@ -910,8 +910,8 @@ MonoBehaviour:
     RandomPathLength: 1
     PathLengthConditionType: 0
     PathLength: 0
-    IsStationnaryAfterNWaypoints: 0
-    NWaypointsBeforeStationnary: 0
+    IsStationnaryAfterNWaypoints: 1
+    NWaypointsBeforeStationnary: 3
     MovemementMultiplier:
       m_Mode: 0
       m_CurveMultiplier: 0
@@ -947,7 +947,7 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_ConstantMin: 0
       m_ConstantMax: 1
-    ShowLoopPath: 0
+    ShowLoopPath: 1
   - LoopThroughPath: 0
     RegenPathWithLoop: 0
     RandomMovementPath: 1
@@ -958,7 +958,7 @@ MonoBehaviour:
     IsStationnaryAfterNWaypoints: 0
     NWaypointsBeforeStationnary: 0
     MovemementMultiplier:
-      m_Mode: 0
+      m_Mode: 3
       m_CurveMultiplier: 0
       m_CurveMin:
         serializedVersion: 2
@@ -992,8 +992,8 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_ConstantMin: 0
       m_ConstantMax: 1
-    ShowLoopPath: 0
-  ShowLoopPathChoices: 1
+    ShowLoopPath: 1
+  ShowLoopPathChoices: 0
 --- !u!212 &1560832506
 SpriteRenderer:
   m_ObjectHideFlags: 0
