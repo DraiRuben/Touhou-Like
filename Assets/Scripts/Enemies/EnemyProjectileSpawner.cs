@@ -13,6 +13,7 @@ public class EnemyProjectileSpawner : ScriptableObject
         [HideInInspector] public bool IsCircle;
         [HideInInspector] public bool IsPolygon;
         [HideInInspector] public bool IsStar;
+        [HideInInspector] public bool ShowEnterValue;
         [HideInInspector] public bool ShowExitValue;
         [HideInInspector] public bool ShowInfiniteDuration;
         [HideInInspector] public int OldZoneCount = 1;
@@ -21,8 +22,10 @@ public class EnemyProjectileSpawner : ScriptableObject
         public BehaviourChangeType BehaviourType;
         [ShowCondition("ShowInfiniteDuration")]
         public bool InfiniteDuration;
+        [ShowCondition("ShowEnterValue")]
+        [Tooltip("ALWAYS remember to order the Shoot Zones by behaviour enter time from the biggest to the smallest for Life behaviour types")]
+        public float BehaviourEnterValue;
         [ShowCondition("ShowExitValue")]
-        [Tooltip("ALWAYS remember to order the Shoot Zones by behaviour exit time from the biggest to the smallest for Life behaviour types")]
         public float BehaviourExitValue;
 
         [Header("Pattern")]
@@ -92,6 +95,7 @@ public class EnemyProjectileSpawner : ScriptableObject
                 zone.BehaviourType = behaviour.Key;
                 zone.ShowInfiniteDuration = zone.BehaviourType == BehaviourChangeType.Time;
                 zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType == BehaviourChangeType.Life;
+                zone.ShowEnterValue = zone.BehaviourType == BehaviourChangeType.Life;
                 if (Mathf.Abs(zone.EndAngle - zone.StartAngle) * zone.ZoneCount > 360)
                 {
                     zone.ZoneCount = zone.OldZoneCount;

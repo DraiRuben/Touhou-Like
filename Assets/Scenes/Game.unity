@@ -15716,7 +15716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShootSettings: {fileID: 11400000, guid: ed08e3362a62667449f270f2c7038238, type: 2}
-  m_currentBehaviourType: 0
+  m_currentBehaviourType: 3
 --- !u!114 &1560832504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15745,7 +15745,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TriggerNextMovementBehaviour: 0
   m_transitionType: 1
-  IsStationnaryAfterNPaths: 1
+  IsStationnaryAfterNPaths: 0
   NPathsBeforeStationnary: 2
   LoopPathChoices: 1
   m_pathChoices:

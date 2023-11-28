@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ public class EnemyFiringSystem : MonoBehaviour
     [SerializeField] private EnemyProjectileSpawner.BehaviourChangeType m_currentBehaviourType;
 
     private int m_nextBehaviourIndex;
+    private int m_lifeAlreadyChecked = int.MaxValue;
 
     private List<ParticleSystem> m_usedEmitters = new();
     private List<int> m_alreadyUsedPatterns = new();
@@ -45,21 +47,25 @@ public class EnemyFiringSystem : MonoBehaviour
                     m_nextBehaviourIndex = 0;
                     m_alreadyUsedPatterns.Clear();
                 }
-                if (m_healthComp.Health <= ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourExitValue
+                float maxValue = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourEnterValue;
+                float minValue = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourExitValue;
+                if (m_healthComp.Health <= maxValue && m_lifeAlreadyChecked>maxValue 
+                && m_healthComp.Health > minValue
                     && m_currentBehaviour != ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i])
                 {
                     m_currentBehaviour = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i];
                     m_nextBehaviourIndex = i;
                     m_currentBehaviourType = EnemyProjectileSpawner.BehaviourChangeType.Life;
-                    StartCoroutine(ShootRoutine());
-                    return;
+                    m_movementHandler.TriggerNextMovementBehaviour = true;
+                    ShootBehaviourLaunch();
                 }
             }
+            m_lifeAlreadyChecked = m_healthComp.Health;
         }
     }
     private void NextPattern()
     {
-        if (!IsInPriorityShootingBehaviour) //if we aren't in a behaviour for collision or death since those ones interrupt any other pattern
+        if (!m_priority) //if we aren't in a behaviour for collision or death since those ones interrupt any other pattern
         {
             //firstly check if we can trigger a health pattern, else simply do a timed pattern
             TryDoLifeBehaviour();
@@ -119,107 +125,107 @@ public class EnemyFiringSystem : MonoBehaviour
                 m_currentBehaviour = ShootSettings.ProjectilePatterns[_newBehaviourType].ShootZones[index];
                 break;
         }
-        StartCoroutine(ShootRoutine());
+        ShootBehaviourLaunch();
         m_currentBehaviourType = _newBehaviourType;
     }
-
-    private IEnumerator ShootRoutine()
+    private Func<bool> GetStopCondition()
     {
-        StopEmission();
+        float MaxHealth = m_currentBehaviour.BehaviourEnterValue;
+        float MinHealth = m_currentBehaviour.BehaviourExitValue;
+        return () => m_healthComp.Health <= MaxHealth && m_healthComp.Health > MinHealth;
+    }
+    private void ShootBehaviourLaunch()
+    {
         if (m_currentBehaviour.patternType == EnemyProjectileSpawner.ShootZone.PatternType.Circle)
         {
-            if (m_currentBehaviour.ZoneCount > m_usedEmitters.Count)
-            {
-                for (int i = m_usedEmitters.Count; i < m_currentBehaviour.ZoneCount; i++)
-                    m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
-            }
-            else if (m_usedEmitters.Count > m_currentBehaviour.ZoneCount)
-            {
-                ReturnUnsusedSystem(m_currentBehaviour.ZoneCount);
-            }
+            int indexOffset = m_usedEmitters.Count;
+            for (int i = 0; i < m_currentBehaviour.ZoneCount; i++)
+                m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
+
             for (int i = 0; i < m_currentBehaviour.ZoneCount; i++)
             {
-                m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
+                m_usedEmitters[i + indexOffset].transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
 
-                SetupParticleSystemParameters(m_usedEmitters[i]);
+                SetupParticleSystemParameters(m_usedEmitters[i + indexOffset]);
 
                 //Shape Module
-                ShapeModule ShapeModule = m_usedEmitters[i].shape;
+                ShapeModule ShapeModule = m_usedEmitters[i + indexOffset].shape;
                 ShapeModule.enabled = true;
                 ShapeModule.shapeType = ParticleSystemShapeType.Cone;
                 ShapeModule.radius = 0.01f;
                 ShapeModule.arc = Mathf.Abs(m_currentBehaviour.EndAngle - m_currentBehaviour.StartAngle);
                 ShapeModule.arcMode = ParticleSystemShapeMultiModeValue.BurstSpread;
-                m_usedEmitters[i].transform.position = transform.position;
+                m_usedEmitters[i + indexOffset].transform.position = transform.position;
 
                 //Burst Emission
                 Burst[] burst = new Burst[1];
                 burst[0].count = m_currentBehaviour.ProjectileCount;
                 burst[0].repeatInterval = m_currentBehaviour.SpawnFrequency;
                 burst[0].cycleCount = 0;
-                m_usedEmitters[i].emission.SetBursts(burst);
+                m_usedEmitters[i + indexOffset].emission.SetBursts(burst);
 
                 //Emission Module
                 EmissionModule EmissionModule = m_usedEmitters[i].emission;
                 EmissionModule.rateOverDistance = 0;
                 EmissionModule.rateOverTime = 0;
 
-                ParticleSystemRenderer particleSystemRenderer = m_usedEmitters[i].GetComponent<ParticleSystemRenderer>();
+                ParticleSystemRenderer particleSystemRenderer = m_usedEmitters[i+ indexOffset].GetComponent<ParticleSystemRenderer>();
                 particleSystemRenderer.alignment = ParticleSystemRenderSpace.Velocity;
                 particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
                 particleSystemRenderer.sortMode = ParticleSystemSortMode.OldestInFront;
-                StartCoroutine(EmissionRoutine());
+
+                if(m_currentBehaviourType != EnemyProjectileSpawner.BehaviourChangeType.Life)
+                    StartCoroutine(EmissionRoutine(i + indexOffset, !m_currentBehaviour.InfiniteDuration?m_currentBehaviour.BehaviourExitValue:-1));
+                else
+                    StartCoroutine(EmissionRoutine(i + indexOffset, -1,GetStopCondition()));
             }
         }
         else if (m_currentBehaviour.patternType == EnemyProjectileSpawner.ShootZone.PatternType.Polygon)
         {
-            if (m_usedEmitters.Count <= 0)
-            {
-                m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
-            }
-            else if (m_usedEmitters.Count > 1)
-            {
-                ReturnUnsusedSystem(1);
-            }
-            SetupParticleSystemParameters(m_usedEmitters[0]);
+            int indexOffset = m_usedEmitters.Count;
+            m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
+
+
+            SetupParticleSystemParameters(m_usedEmitters[indexOffset]);
             Particle[] Particles = ComputePolygon();
 
-            ShapeModule ShapeModule = m_usedEmitters[0].shape;
+            ShapeModule ShapeModule = m_usedEmitters[indexOffset].shape;
             ShapeModule.enabled = false;
 
-            MainModule MainModule = m_usedEmitters[0].main;
+            MainModule MainModule = m_usedEmitters[indexOffset].main;
             MainModule.loop = false;
             MainModule.playOnAwake = false;
 
-            EmissionModule EmissionModule = m_usedEmitters[0].emission;
+            EmissionModule EmissionModule = m_usedEmitters[indexOffset].emission;
             EmissionModule.enabled = false;
 
-            StartCoroutine(EmissionRoutine(Particles));
+            if (m_currentBehaviourType != EnemyProjectileSpawner.BehaviourChangeType.Life)
+                StartCoroutine(EmissionRoutine(indexOffset, !m_currentBehaviour.InfiniteDuration ? m_currentBehaviour.BehaviourExitValue : -1,null, Particles));
+            else
+                StartCoroutine(EmissionRoutine(indexOffset, -1, GetStopCondition(), Particles));
         }
         else if (m_currentBehaviour.patternType == EnemyProjectileSpawner.ShootZone.PatternType.Star)
         {
-            if (m_usedEmitters.Count <= 0)
-            {
-                m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
-            }
-            else if (m_usedEmitters.Count > 1)
-            {
-                ReturnUnsusedSystem(1);
-            }
-            SetupParticleSystemParameters(m_usedEmitters[0]);
+            int indexOffset = m_usedEmitters.Count;
+            m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
+
+            SetupParticleSystemParameters(m_usedEmitters[indexOffset]);
 
             Particle[] Particles = ComputeStar();
 
-            ShapeModule ShapeModule = m_usedEmitters[0].shape;
+            ShapeModule ShapeModule = m_usedEmitters[indexOffset].shape;
             ShapeModule.enabled = false;
 
-            MainModule MainModule = m_usedEmitters[0].main;
+            MainModule MainModule = m_usedEmitters[indexOffset].main;
             MainModule.loop = false;
             MainModule.playOnAwake = false;
-            EmissionModule EmissionModule = m_usedEmitters[0].emission;
+            EmissionModule EmissionModule = m_usedEmitters[indexOffset].emission;
             EmissionModule.enabled = false;
 
-            StartCoroutine(EmissionRoutine(Particles));
+            if (m_currentBehaviourType != EnemyProjectileSpawner.BehaviourChangeType.Life)
+                StartCoroutine(EmissionRoutine(indexOffset, !m_currentBehaviour.InfiniteDuration ? m_currentBehaviour.BehaviourExitValue : -1, null, Particles));
+            else
+                StartCoroutine(EmissionRoutine(indexOffset, -1, GetStopCondition(), Particles));
         }
         if (m_currentBehaviour.ZoneCount > 1)
             for (int i = 1; i < m_currentBehaviour.ZoneCount; i++)
@@ -227,18 +233,16 @@ public class EnemyFiringSystem : MonoBehaviour
                 m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, i * (-360f / m_currentBehaviour.ZoneCount));
             }
 
-        yield break;
 
     }
-    private void StopEmission()
+    private void StopEmission(int index)
     {
-        if (m_usedEmitters.Count > 0)
-            for (int i = 0; i < m_usedEmitters.Count; i++)
-            {
-                m_usedEmitters[i].Stop();
-                ProjectilePool.Instance.ReturnToPoolLater(m_usedEmitters[i].gameObject, m_usedEmitters[i].main.startLifetime.constant);
-                m_usedEmitters.RemoveAt(i);
-            }
+        m_usedEmitters[index].Stop();
+
+        //doesn't work since I made it possible for multiple behaviours to execute at the same time
+        //ProjectilePool.Instance.ReturnToPoolLater(m_usedEmitters[index].gameObject, m_usedEmitters[index].main.startLifetime.constant);
+        //m_usedEmitters.RemoveAt(index);
+            
     }
     //called on enemy death or pattern change
     private void ReturnUnsusedSystem(int usedSystems)
@@ -392,20 +396,19 @@ public class EnemyFiringSystem : MonoBehaviour
         }
         return Particles;
     }
-    private IEnumerator EmissionRoutine(Particle[] _particles = null)
+    private IEnumerator EmissionRoutine(int _emittorIndex, float stopTime = -1,Func<bool> condition = null, Particle[] _particles = null)
     {
-        EnemyProjectileSpawner.BehaviourChangeType routineType = m_currentBehaviourType;
         float timer = float.PositiveInfinity;
         float timeSinceCoroutineStart = 0;
         Particle[] _copy;
-        while (routineType == m_currentBehaviourType && (m_currentBehaviour.InfiniteDuration || timeSinceCoroutineStart < m_currentBehaviour.BehaviourExitValue))
+        if(stopTime>0)
         {
-            for (int i = 0; i < m_usedEmitters.Count; i++)
+            while (timeSinceCoroutineStart<stopTime)
             {
-                m_usedEmitters[i].transform.position = m_transform.position;
+                m_usedEmitters[_emittorIndex].transform.position = m_transform.position;
                 if (m_currentBehaviour.Spin)
                 {
-                    m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, (m_usedEmitters[i].transform.rotation.eulerAngles.z + m_currentBehaviour.SpinSpeed * Time.deltaTime) % 360f);
+                    m_usedEmitters[_emittorIndex].transform.rotation = Quaternion.Euler(0, 0, (m_usedEmitters[_emittorIndex].transform.rotation.eulerAngles.z + m_currentBehaviour.SpinSpeed * Time.deltaTime) % 360f);
                 }
                 else if (m_currentBehaviour.AimAtClosestPlayer)
                 {
@@ -413,34 +416,118 @@ public class EnemyFiringSystem : MonoBehaviour
                     if (_closestPlayer != null)
                     {
                         float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
-                        m_usedEmitters[i].transform.rotation = Quaternion.Euler(0, 0, angle);
+                        m_usedEmitters[_emittorIndex].transform.rotation = Quaternion.Euler(0, 0, angle);
 
                     }
                 }
-            }
-            timer += Time.deltaTime;
-            timeSinceCoroutineStart += Time.deltaTime;
-            if (_particles != null && timer > m_currentBehaviour.SpawnFrequency && m_currentBehaviour.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
-            {
-                timer = 0;
 
-                _copy = _particles.ToArray();
-                for (int i = 0; i < _copy.Length; i++)
+                timer += Time.deltaTime;
+                timeSinceCoroutineStart += Time.deltaTime;
+                if (_particles != null && timer > m_currentBehaviour.SpawnFrequency && m_currentBehaviour.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
                 {
-                    Vector3 newPos = _copy[i].position.x * m_usedEmitters[0].transform.right + _copy[i].position.y * m_usedEmitters[0].transform.up;
-                    _copy[i].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? newPos : m_usedEmitters[0].transform.right);
-                    _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
-                    newPos += m_usedEmitters[0].transform.position;
-                    _copy[i].position = new(newPos.x, newPos.y, 0);
+                    timer = 0;
 
+                    _copy = _particles.ToArray();
+                    for (int i = 0; i < _copy.Length; i++)
+                    {
+                        Vector3 newPos = _copy[i].position.x * m_usedEmitters[_emittorIndex].transform.right + _copy[i].position.y * m_usedEmitters[_emittorIndex].transform.up;
+                        _copy[i].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? newPos : m_usedEmitters[_emittorIndex].transform.right);
+                        _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                        newPos += m_usedEmitters[_emittorIndex].transform.position;
+                        _copy[i].position = new(newPos.x, newPos.y, 0);
+
+                    }
+                    m_usedEmitters[_emittorIndex].SetParticles(_copy, _copy.Length, m_usedEmitters[_emittorIndex].particleCount);
+                    if (m_usedEmitters[_emittorIndex].isStopped) m_usedEmitters[_emittorIndex].Play();
                 }
-                m_usedEmitters[0].SetParticles(_copy, _copy.Length, m_usedEmitters[0].particleCount);
-                if (m_usedEmitters[0].isStopped) m_usedEmitters[0].Play();
                 yield return null;
-                continue;
             }
-            yield return null;
         }
+        else if (condition!=null)
+        {
+            while (condition.Invoke())
+            {
+                m_usedEmitters[_emittorIndex].transform.position = m_transform.position;
+                if (m_currentBehaviour.Spin)
+                {
+                    m_usedEmitters[_emittorIndex].transform.rotation = Quaternion.Euler(0, 0, (m_usedEmitters[_emittorIndex].transform.rotation.eulerAngles.z + m_currentBehaviour.SpinSpeed * Time.deltaTime) % 360f);
+                }
+                else if (m_currentBehaviour.AimAtClosestPlayer)
+                {
+                    GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
+                    if (_closestPlayer != null)
+                    {
+                        float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
+                        m_usedEmitters[_emittorIndex].transform.rotation = Quaternion.Euler(0, 0, angle);
+
+                    }
+                }
+
+                timer += Time.deltaTime;
+                timeSinceCoroutineStart += Time.deltaTime;
+                if (_particles != null && timer > m_currentBehaviour.SpawnFrequency && m_currentBehaviour.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
+                {
+                    timer = 0;
+
+                    _copy = _particles.ToArray();
+                    for (int i = 0; i < _copy.Length; i++)
+                    {
+                        Vector3 newPos = _copy[i].position.x * m_usedEmitters[_emittorIndex].transform.right + _copy[i].position.y * m_usedEmitters[_emittorIndex].transform.up;
+                        _copy[i].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? newPos : m_usedEmitters[_emittorIndex].transform.right);
+                        _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                        newPos += m_usedEmitters[_emittorIndex].transform.position;
+                        _copy[i].position = new(newPos.x, newPos.y, 0);
+
+                    }
+                    m_usedEmitters[_emittorIndex].SetParticles(_copy, _copy.Length, m_usedEmitters[_emittorIndex].particleCount);
+                    if (m_usedEmitters[_emittorIndex].isStopped) m_usedEmitters[_emittorIndex].Play();
+                }
+                yield return null;
+            }
+        }
+        else
+        {
+            while (true)
+            {
+                m_usedEmitters[_emittorIndex].transform.position = m_transform.position;
+                if (m_currentBehaviour.Spin)
+                {
+                    m_usedEmitters[_emittorIndex].transform.rotation = Quaternion.Euler(0, 0, (m_usedEmitters[_emittorIndex].transform.rotation.eulerAngles.z + m_currentBehaviour.SpinSpeed * Time.deltaTime) % 360f);
+                }
+                else if (m_currentBehaviour.AimAtClosestPlayer)
+                {
+                    GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
+                    if (_closestPlayer != null)
+                    {
+                        float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
+                        m_usedEmitters[_emittorIndex].transform.rotation = Quaternion.Euler(0, 0, angle);
+
+                    }
+                }
+
+                timer += Time.deltaTime;
+                timeSinceCoroutineStart += Time.deltaTime;
+                if (_particles != null && timer > m_currentBehaviour.SpawnFrequency && m_currentBehaviour.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
+                {
+                    timer = 0;
+
+                    _copy = _particles.ToArray();
+                    for (int i = 0; i < _copy.Length; i++)
+                    {
+                        Vector3 newPos = _copy[i].position.x * m_usedEmitters[_emittorIndex].transform.right + _copy[i].position.y * m_usedEmitters[_emittorIndex].transform.up;
+                        _copy[i].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? newPos : m_usedEmitters[_emittorIndex].transform.right);
+                        _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                        newPos += m_usedEmitters[_emittorIndex].transform.position;
+                        _copy[i].position = new(newPos.x, newPos.y, 0);
+
+                    }
+                    m_usedEmitters[_emittorIndex].SetParticles(_copy, _copy.Length, m_usedEmitters[_emittorIndex].particleCount);
+                    if (m_usedEmitters[_emittorIndex].isStopped) m_usedEmitters[_emittorIndex].Play();
+                }
+                yield return null;
+            }
+        }
+        StopEmission(_emittorIndex);
         NextPattern();
     }
     private void SetupParticleSystemParameters(ParticleSystem system)
