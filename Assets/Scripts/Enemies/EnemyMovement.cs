@@ -5,12 +5,9 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    private EntityHealthHandler m_healthHandler;
-    private EnemyFiringSystem m_weapon;
     private Rigidbody2D m_rb;
-
+    private EntityHealthHandler m_healthHandler;
     public bool TriggerNextMovementBehaviour;
-
     private int m_currentPathChoiceIndex;
     [SerializeField] private PathTransitionType m_transitionType;
     [Space]
@@ -24,13 +21,17 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private List<PathChoice> m_pathChoices;
     private void Awake()
     {
-        m_healthHandler = GetComponent<EntityHealthHandler>();
-        m_weapon = GetComponent<EnemyFiringSystem>();
         m_rb = GetComponent<Rigidbody2D>();
+        m_healthHandler = GetComponent<EntityHealthHandler>();
     }
     private void Start()
     {
         StartCoroutine(Movement());
+    }
+    private void OnParticleCollision(GameObject other)
+    {
+        m_healthHandler.Health--;
+        HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Hit);
     }
     private IEnumerator Movement()
     {

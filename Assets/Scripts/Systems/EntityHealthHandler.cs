@@ -6,6 +6,7 @@ public class EntityHealthHandler : MonoBehaviour
 {
     private int m_health;
     private bool m_isInvincible = false;
+    [SerializeField] private GameObject m_toMakeInvincible;
     [SerializeField][Min(1)] private int m_maxHealth = 1;
     [NonSerialized] public UnityEvent OnHealthChanged = new();
     [NonSerialized] public UnityEvent OnDeath = new();
@@ -15,13 +16,21 @@ public class EntityHealthHandler : MonoBehaviour
         get { return m_health; }
         set
         {
+            if(value > m_maxHealth)
+            {
+                m_maxHealth = value;
+                m_health = value;
+                OnHealthChanged.Invoke();
+                return;
+            }
             if (!m_isInvincible)
             {
                 m_health = value;
                 if (gameObject.layer == LayerMask.NameToLayer("Player"))
                 {
-                    gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
-                    Invoke(nameof(SetVulnerable), 1f);
+                    m_toMakeInvincible.layer = LayerMask.NameToLayer("PlayerInvincible");
+                    m_isInvincible = true;
+                    Invoke(nameof(SetVulnerable), .5f);
                 }
                 if (m_health > 0)
                     OnHealthChanged.Invoke();
@@ -32,7 +41,8 @@ public class EntityHealthHandler : MonoBehaviour
     }
     private void SetVulnerable()
     {
-        gameObject.layer = LayerMask.NameToLayer("Player");
+        m_toMakeInvincible.layer = LayerMask.NameToLayer("Player");
+        m_isInvincible = false;
     }
     public int MaxHealth { get { return m_health; } set { m_maxHealth = value; m_health = value; OnMaxHealthChanged.Invoke(); } }
 

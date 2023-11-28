@@ -1,16 +1,17 @@
+using System.Collections;
 using UnityEngine;
 
 public class ProjectilePool : MonoBehaviour
 {
     public static ProjectilePool Instance;
-    [SerializeField] private ParticleSystem m_projectileEmitter;
+    [SerializeField] private ParticleSystem m_emitterPrefab;
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    public GameObject GetProjectileEmitter()
+    public GameObject GetEmitter()
     {
         if (transform.childCount > 0)
         {
@@ -20,7 +21,7 @@ public class ProjectilePool : MonoBehaviour
         }
         else
         {
-            GameObject _toGive = Instantiate(m_projectileEmitter.gameObject);
+            GameObject _toGive = Instantiate(m_emitterPrefab.gameObject);
             return _toGive;
         }
     }
@@ -30,5 +31,14 @@ public class ProjectilePool : MonoBehaviour
         _toReturn.transform.localPosition = Vector3.zero;
         _toReturn.transform.rotation = Quaternion.identity;
         _toReturn.gameObject.SetActive(false);
+    }
+    public void ReturnToPoolLater(GameObject _toReturn,float timeBeforeReturn)
+    {
+        StartCoroutine(ReturnLater(_toReturn,timeBeforeReturn));
+    }
+    private IEnumerator ReturnLater(GameObject _toReturn,float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        ReturnToPool(_toReturn);
     }
 }

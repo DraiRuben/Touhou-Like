@@ -8,49 +8,61 @@ using static UnityEngine.ParticleSystem;
 public class EnemyFiringSystem : MonoBehaviour
 {
     [SerializeField] private EnemyProjectileSpawner ShootSettings;
+
+    [SerializeField] private EnemyProjectileSpawner.BehaviourChangeType m_currentBehaviourType;
+
+    private int m_nextBehaviourIndex;
+
     private List<ParticleSystem> m_usedEmitters = new();
+    private List<int> m_alreadyUsedPatterns = new();
+
     private EntityHealthHandler m_healthComp;
     private EnemyProjectileSpawner.ShootZone m_currentBehaviour;
-    private int m_nextBehaviourIndex;
-    private List<int> m_alreadyUsedPatterns = new();
-    private EnemyProjectileSpawner.BehaviourChangeType m_currentBehaviourType;
     private Transform m_transform;
+    private EnemyMovement m_movementHandler;
     private void Awake()
     {
         m_healthComp = GetComponent<EntityHealthHandler>();
         m_healthComp.OnHealthChanged.AddListener(() => IsInPriorityShootingBehaviour = true);
         m_healthComp.OnDeath.AddListener(() => IsInPriorityShootingBehaviour = true);
         m_transform = transform;
+        m_movementHandler = GetComponent<EnemyMovement>();
     }
     private void Start()
     {
         NextPattern();
     }
-    private bool IsInPriorityShootingBehaviour;
+    private bool m_priority = false;
+    private bool IsInPriorityShootingBehaviour { get { return m_priority; } set { m_priority = value; if (value) NextPattern(); } }
+    private void TryDoLifeBehaviour()
+    {
+        if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Life))
+        {
+            for (int i = 0; i < ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones.Count; i++)
+            {
+                if (m_currentBehaviourType != EnemyProjectileSpawner.BehaviourChangeType.Life)
+                {
+                    m_nextBehaviourIndex = 0;
+                    m_alreadyUsedPatterns.Clear();
+                }
+                if (m_healthComp.Health <= ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourExitValue
+                    && m_currentBehaviour != ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i])
+                {
+                    m_currentBehaviour = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i];
+                    m_nextBehaviourIndex = i;
+                    m_currentBehaviourType = EnemyProjectileSpawner.BehaviourChangeType.Life;
+                    StartCoroutine(ShootRoutine());
+                    return;
+                }
+            }
+        }
+    }
     private void NextPattern()
     {
         if (!IsInPriorityShootingBehaviour) //if we aren't in a behaviour for collision or death since those ones interrupt any other pattern
         {
             //firstly check if we can trigger a health pattern, else simply do a timed pattern
-            if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Life))
-            {
-                for (int i = 0; i < ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones.Count; i++)
-                {
-                    if (m_currentBehaviourType != EnemyProjectileSpawner.BehaviourChangeType.Life)
-                    {
-                        m_nextBehaviourIndex = 0;
-                        m_alreadyUsedPatterns.Clear();
-                    }
-                    if (m_healthComp.Health >= ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourExitValue)
-                    {
-                        m_currentBehaviour = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i];
-                        m_nextBehaviourIndex = i;
-                        m_currentBehaviourType = EnemyProjectileSpawner.BehaviourChangeType.Life;
-                        StartCoroutine(ShootRoutine());
-                        return;
-                    }
-                }
-            }
+            TryDoLifeBehaviour();
             //if we reached there, it means we don't have any usable health patters so we can check for time patterns
             if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Time))
             {
@@ -63,11 +75,14 @@ public class EnemyFiringSystem : MonoBehaviour
             if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Collision)) //damaged
             {
                 ChooseNewBehaviour(EnemyProjectileSpawner.BehaviourChangeType.Collision);
+                return;
             }
             else if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Death))//death
             {
                 ChooseNewBehaviour(EnemyProjectileSpawner.BehaviourChangeType.Death);
+                return;
             }
+            TryDoLifeBehaviour();
         }
 
     }
@@ -116,7 +131,7 @@ public class EnemyFiringSystem : MonoBehaviour
             if (m_currentBehaviour.ZoneCount > m_usedEmitters.Count)
             {
                 for (int i = m_usedEmitters.Count; i < m_currentBehaviour.ZoneCount; i++)
-                    m_usedEmitters.Add(ProjectilePool.Instance.GetProjectileEmitter().GetComponent<ParticleSystem>());
+                    m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
             }
             else if (m_usedEmitters.Count > m_currentBehaviour.ZoneCount)
             {
@@ -153,7 +168,6 @@ public class EnemyFiringSystem : MonoBehaviour
                 particleSystemRenderer.alignment = ParticleSystemRenderSpace.Velocity;
                 particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
                 particleSystemRenderer.sortMode = ParticleSystemSortMode.OldestInFront;
-
                 StartCoroutine(EmissionRoutine());
             }
         }
@@ -161,7 +175,7 @@ public class EnemyFiringSystem : MonoBehaviour
         {
             if (m_usedEmitters.Count <= 0)
             {
-                m_usedEmitters.Add(ProjectilePool.Instance.GetProjectileEmitter().GetComponent<ParticleSystem>());
+                m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
             }
             else if (m_usedEmitters.Count > 1)
             {
@@ -186,7 +200,7 @@ public class EnemyFiringSystem : MonoBehaviour
         {
             if (m_usedEmitters.Count <= 0)
             {
-                m_usedEmitters.Add(ProjectilePool.Instance.GetProjectileEmitter().GetComponent<ParticleSystem>());
+                m_usedEmitters.Add(ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>());
             }
             else if (m_usedEmitters.Count > 1)
             {
@@ -222,6 +236,8 @@ public class EnemyFiringSystem : MonoBehaviour
             for (int i = 0; i < m_usedEmitters.Count; i++)
             {
                 m_usedEmitters[i].Stop();
+                ProjectilePool.Instance.ReturnToPoolLater(m_usedEmitters[i].gameObject, m_usedEmitters[i].main.startLifetime.constant);
+                m_usedEmitters.RemoveAt(i);
             }
     }
     //called on enemy death or pattern change
@@ -432,10 +448,9 @@ public class EnemyFiringSystem : MonoBehaviour
         //Render Module
         ParticleSystemRenderer particleSystemRenderer = system.GetComponent<ParticleSystemRenderer>();
         particleSystemRenderer.material = m_currentBehaviour.ProjectileParameters.Mat;
-        particleSystemRenderer.alignment = ParticleSystemRenderSpace.Facing;
         particleSystemRenderer.renderMode = ParticleSystemRenderMode.Mesh;
         particleSystemRenderer.sortMode = ParticleSystemSortMode.None;
-
+        particleSystemRenderer.alignment = ParticleSystemRenderSpace.World;
         //Main Module
         MainModule mainModule = system.main;
         mainModule.startColor = m_currentBehaviour.ProjectileParameters.InitialColor;
@@ -448,7 +463,7 @@ public class EnemyFiringSystem : MonoBehaviour
         mainModule.startRotation3D = true;
         mainModule.loop = true;
         mainModule.playOnAwake = true;
-        mainModule.maxParticles = (int)(m_currentBehaviour.ProjectileCount / m_currentBehaviour.SpawnFrequency * 1.5f);
+        mainModule.maxParticles = 10000;
         mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
 
         MinMaxCurve RotZ = mainModule.startRotationZ;

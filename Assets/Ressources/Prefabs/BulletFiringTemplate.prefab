@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3483002134954342302}
   - component: {fileID: 130189947321336446}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: BulletFiringTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -751,7 +751,7 @@ ParticleSystem:
     sphericalDirectionAmount: 1
     randomPositionAmount: 0
     radius:
-      value: 0.18
+      value: 0.0001
       mode: 3
       spread: 0
       speed:
@@ -3790,7 +3790,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.5
+    radiusScale: 0.3
     collidesWith:
       serializedVersion: 2
       m_Bits: 64
