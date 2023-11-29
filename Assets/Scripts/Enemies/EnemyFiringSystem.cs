@@ -22,6 +22,7 @@ public class EnemyFiringSystem : MonoBehaviour
     private EnemyProjectileSpawner.ShootZone m_currentBehaviour;
     private Transform m_transform;
     private EnemyMovement m_movementHandler;
+    private Rigidbody2D m_rb;
     private void Awake()
     {
         m_healthComp = GetComponent<EntityHealthHandler>();
@@ -29,6 +30,7 @@ public class EnemyFiringSystem : MonoBehaviour
         m_healthComp.OnDeath.AddListener(() => IsInPriorityShootingBehaviour = true);
         m_transform = transform;
         m_movementHandler = GetComponent<EnemyMovement>();
+        m_rb = GetComponent<Rigidbody2D>();
     }
     private void Start()
     {
@@ -50,7 +52,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 }
                 float maxValue = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourEnterValue;
                 float minValue = ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i].BehaviourExitValue;
-                if (m_healthComp.Health <= maxValue && m_lifeAlreadyChecked>maxValue 
+                if (m_healthComp.Health <= maxValue && m_lifeAlreadyChecked > maxValue
                 && m_healthComp.Health > minValue
                     && m_currentBehaviour != ShootSettings.ProjectilePatterns[EnemyProjectileSpawner.BehaviourChangeType.Life].ShootZones[i])
                 {
@@ -81,14 +83,14 @@ public class EnemyFiringSystem : MonoBehaviour
         else
         {
             if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Collision)
-                && m_healthComp.Health>0 && HasCollided) //damaged
+                && m_healthComp.Health > 0 && HasCollided) //damaged
             {
                 HasCollided = false;
                 ChooseNewBehaviour(EnemyProjectileSpawner.BehaviourChangeType.Collision);
                 return;
             }
             else if (ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Death)
-                && m_healthComp.Health<=0)//death
+                && m_healthComp.Health <= 0)//death
             {
                 HasCollided = false;
                 GetComponent<Rigidbody2D>().velocity = Vector3.zero;
@@ -102,7 +104,7 @@ public class EnemyFiringSystem : MonoBehaviour
             }
             TryDoLifeBehaviour();
         }
-        
+
 
     }
     private void ChooseNewBehaviour(EnemyProjectileSpawner.BehaviourChangeType _newBehaviourType)
@@ -167,7 +169,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 ShapeModule.shapeType = ParticleSystemShapeType.Cone;
                 ShapeModule.radius = 0.01f;
                 ShapeModule.arc = Mathf.Abs(m_currentBehaviour.EndAngle - m_currentBehaviour.StartAngle);
-                ShapeModule.arcMode = m_currentBehaviour.RandomPosition? ParticleSystemShapeMultiModeValue.Random: ParticleSystemShapeMultiModeValue.BurstSpread;
+                ShapeModule.arcMode = m_currentBehaviour.RandomPosition ? ParticleSystemShapeMultiModeValue.Random : ParticleSystemShapeMultiModeValue.BurstSpread;
                 system.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0, 0, i * (-360f / m_currentBehaviour.ZoneCount)));
 
                 //Burst Emission
@@ -187,15 +189,15 @@ public class EnemyFiringSystem : MonoBehaviour
                 particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
                 particleSystemRenderer.sortMode = ParticleSystemSortMode.OldestInFront;
 
-                
-                if(m_currentBehaviourType == EnemyProjectileSpawner.BehaviourChangeType.Time)
-                    StartCoroutine(EmissionRoutine(system,m_currentBehaviour, !m_currentBehaviour.InfiniteDuration?m_currentBehaviour.BehaviourExitValue:-1));
-                else if(m_currentBehaviourType == EnemyProjectileSpawner.BehaviourChangeType.Life)
-                    StartCoroutine(EmissionRoutine(system, m_currentBehaviour, - 1,GetStopCondition()));
+
+                if (m_currentBehaviourType == EnemyProjectileSpawner.BehaviourChangeType.Time)
+                    StartCoroutine(EmissionRoutine(system, m_currentBehaviour, !m_currentBehaviour.InfiniteDuration ? m_currentBehaviour.BehaviourExitValue : -1));
+                else if (m_currentBehaviourType == EnemyProjectileSpawner.BehaviourChangeType.Life)
+                    StartCoroutine(EmissionRoutine(system, m_currentBehaviour, -1, GetStopCondition()));
                 else
                 {
                     Burst _burst = EmissionModule.GetBurst(0);
-                    _burst.cycleCount = (int) m_currentBehaviour.BehaviourExitValue;
+                    _burst.cycleCount = (int)m_currentBehaviour.BehaviourExitValue;
                     EmissionModule.SetBurst(0, _burst);
                     var MainModule = system.main;
                     MainModule.loop = false;
@@ -204,7 +206,7 @@ public class EnemyFiringSystem : MonoBehaviour
             }
         }
         else if (m_currentBehaviour.patternType == EnemyProjectileSpawner.ShootZone.PatternType.Polygon)
-        {  
+        {
             ParticleSystem system = ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>();
 
             SetupParticleSystemParameters(system);
@@ -221,7 +223,7 @@ public class EnemyFiringSystem : MonoBehaviour
             EmissionModule.enabled = false;
 
             if (m_currentBehaviourType == EnemyProjectileSpawner.BehaviourChangeType.Time)
-                StartCoroutine(EmissionRoutine(system, m_currentBehaviour,!m_currentBehaviour.InfiniteDuration ? m_currentBehaviour.BehaviourExitValue : -1,null, Particles));
+                StartCoroutine(EmissionRoutine(system, m_currentBehaviour, !m_currentBehaviour.InfiniteDuration ? m_currentBehaviour.BehaviourExitValue : -1, null, Particles));
             else if (m_currentBehaviourType == EnemyProjectileSpawner.BehaviourChangeType.Life)
                 StartCoroutine(EmissionRoutine(system, m_currentBehaviour, -1, GetStopCondition(), Particles));
             else
@@ -314,7 +316,7 @@ public class EnemyFiringSystem : MonoBehaviour
     private Particle[] ComputeStar()
     {
         float angle = 360f / m_currentBehaviour.Limbs;
-        int particleCount = m_currentBehaviour.Limbs * ((m_currentBehaviour.ProjectileCount - 1) * 2 + m_currentBehaviour.ProjectileCount - 2);
+        int particleCount = m_currentBehaviour.Limbs * ((m_currentBehaviour.ProjectileCount - 1) * 2 + (int)(m_currentBehaviour.ProjectileCount / 1.2f) - 2);
         Particle[] Particles = new Particle[particleCount];
         Vector3 EdgePos = new();
         Vector3 LeftEdgePos = new();
@@ -343,7 +345,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
             int firstCornerIndex = i * ((particleCount / m_currentBehaviour.Limbs));
             Particles[firstCornerIndex].position = EdgePos;
-            Particles[firstCornerIndex].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir)/m_currentBehaviour.CenterDistance;
+            Particles[firstCornerIndex].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir) / m_currentBehaviour.CenterDistance;
             Particles[firstCornerIndex].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
             Particles[firstCornerIndex].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[firstCornerIndex].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -380,10 +382,11 @@ public class EnemyFiringSystem : MonoBehaviour
                 Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
 
             }
-            for (int u = 0; u < m_currentBehaviour.ProjectileCount - 2; u++)
+            int InnerCount = (int)(m_currentBehaviour.ProjectileCount / 1.2f) - 2;
+            for (int u = 0; u < InnerCount; u++)
             {
-                x1 = Mathf.Lerp(LeftEdgePos.x, RightEdgePos.x, (float)(u + 1) / (m_currentBehaviour.ProjectileCount - 1));
-                y1 = Mathf.Lerp(LeftEdgePos.y, RightEdgePos.y, (float)(u + 1) / (m_currentBehaviour.ProjectileCount - 1));
+                x1 = Mathf.Lerp(LeftEdgePos.x, RightEdgePos.x, ((float)(u + 1)) / (InnerCount + 1));
+                y1 = Mathf.Lerp(LeftEdgePos.y, RightEdgePos.y, ((float)(u + 1)) / (InnerCount + 1));
 
                 int index = u + firstCornerIndex + 2 * m_currentBehaviour.ProjectileCount - 2;
                 Particles[index].position = new Vector3(x1, y1);
@@ -399,17 +402,18 @@ public class EnemyFiringSystem : MonoBehaviour
         }
         return Particles;
     }
-    private IEnumerator EmissionRoutine(ParticleSystem system,EnemyProjectileSpawner.ShootZone _Zone, float stopTime = -1,Func<bool> condition = null, Particle[] _particles = null)
+    private IEnumerator EmissionRoutine(ParticleSystem system, EnemyProjectileSpawner.ShootZone _Zone, float stopTime = -1, Func<bool> condition = null, Particle[] _particles = null)
     {
-        if(system.isStopped)
+        if (system.isStopped)
             system.Play();
 
+        bool death = m_stopEmission;
         float timer = float.PositiveInfinity;
         float timeSinceCoroutineStart = 0;
         Particle[] _copy;
-        if(stopTime>0)
+        if (stopTime > 0)
         {
-            while (timeSinceCoroutineStart<stopTime && !m_stopEmission)
+            while (timeSinceCoroutineStart < stopTime && (!m_stopEmission || death))
             {
                 system.transform.position = m_transform.position;
                 if (_Zone.Spin)
@@ -423,9 +427,11 @@ public class EnemyFiringSystem : MonoBehaviour
                     {
                         float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
                         system.transform.rotation = Quaternion.Euler(0, 0, angle);
-
                     }
                 }
+                //breaks when using multiple zones in a circle pattern
+                if (_Zone.RotationFollowsAim)
+                    transform.rotation = system.transform.rotation;
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
@@ -446,10 +452,10 @@ public class EnemyFiringSystem : MonoBehaviour
                     system.SetParticles(_copy, _copy.Length, system.particleCount);
                     if (system.isStopped) system.Play();
                 }
-                yield return null;
+                yield return new WaitForFixedUpdate();
             }
         }
-        else if (condition!=null)
+        else if (condition != null)
         {
             while (condition.Invoke() && !m_stopEmission)
             {
@@ -468,6 +474,8 @@ public class EnemyFiringSystem : MonoBehaviour
 
                     }
                 }
+                if (_Zone.RotationFollowsAim)
+                    transform.rotation = system.transform.rotation;
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
@@ -488,7 +496,7 @@ public class EnemyFiringSystem : MonoBehaviour
                     system.SetParticles(_copy, _copy.Length, system.particleCount);
                     if (system.isStopped) system.Play();
                 }
-                yield return null;
+                yield return new WaitForFixedUpdate();
             }
         }
         else
@@ -510,6 +518,8 @@ public class EnemyFiringSystem : MonoBehaviour
 
                     }
                 }
+                if (_Zone.RotationFollowsAim)
+                    transform.rotation = system.transform.rotation;
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
@@ -530,7 +540,7 @@ public class EnemyFiringSystem : MonoBehaviour
                     system.SetParticles(_copy, _copy.Length, system.particleCount);
                     if (system.isStopped) system.Play();
                 }
-                yield return null;
+                yield return new WaitForFixedUpdate();
             }
         }
         system.Stop();
@@ -635,7 +645,7 @@ public class EnemyFiringSystem : MonoBehaviour
             VelocityModule.space = ParticleSystemSimulationSpace.World;
             VelocityModule.speedModifier = m_currentBehaviour.ProjectileParameters.VelocityOverTime;
         }
-        
+
 
         //Bullet curve
         if (m_currentBehaviour.ProjectileParameters.BulletCurve)
@@ -644,8 +654,8 @@ public class EnemyFiringSystem : MonoBehaviour
             VelocityModule.space = ParticleSystemSimulationSpace.World;
             VelocityModule.orbitalZ = m_currentBehaviour.ProjectileParameters.TrajectoryOverTime;
         }
-        
-        if(!m_currentBehaviour.ProjectileParameters.BulletCurve && !m_currentBehaviour.ProjectileParameters.VariableVelocity)
+
+        if (!m_currentBehaviour.ProjectileParameters.BulletCurve && !m_currentBehaviour.ProjectileParameters.VariableVelocity)
         {
             VelocityModule.enabled = false;
         }

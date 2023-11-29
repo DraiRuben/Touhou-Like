@@ -70,7 +70,7 @@ public class EnemyMovement : MonoBehaviour
             if (!waitForNext || TriggerNextMovementBehaviour)
             {
                 m_rb.velocity = MovementVector.normalized
-                * (m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.mode == ParticleSystemCurveMode.Constant ? m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.constant : m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.curve.Evaluate(timer));
+                * (m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.mode == ParticleSystemCurveMode.Constant ? m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.constant : m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.curve.Evaluate(timer) * m_pathChoices[m_currentPathChoiceIndex].MovemementMultiplier.curveMultiplier);
                 timer += Time.fixedDeltaTime;
                 if (Vector2.Distance(transform.position, currentWaypoint) < 0.1f || TriggerNextMovementBehaviour)
                 {
@@ -82,6 +82,7 @@ public class EnemyMovement : MonoBehaviour
                     if (!reachedWaypointsLimit && !TriggerNextMovementBehaviour && Waypoints.Count > 1 && currentWaypointIndex < Waypoints.Count - 1)
                     {
                         currentWaypointIndex++;
+                        timer = 0;
                         currentWaypoint = Waypoints[currentWaypointIndex].position;
                         MovementVector = currentWaypoint - (Vector2)transform.position;
                         continue;
@@ -181,7 +182,7 @@ public class EnemyMovement : MonoBehaviour
         [Min(1)]
         public int NWaypointsBeforeStationnary;
 
-        [Space]
+
         public ParticleSystem.MinMaxCurve MovemementMultiplier;
 
 #if UNITY_EDITOR

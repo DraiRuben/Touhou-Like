@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdf39d21979e95d48a0f81cdfc04d642, type: 3}
-  m_Name: Mob1Behaviour
+  m_Name: Mob2Behaviour
   m_EditorClassIdentifier: 
   ProjectilePatterns:
     m_keys: 0000000002000000
@@ -30,26 +30,26 @@ MonoBehaviour:
         BehaviourExitValue: 15
         patternType: 0
         CircleCenteredVelocity: 1
-        CenterDistance: 0.1
-        StartAngle: 0
-        EndAngle: 0
+        CenterDistance: 1
+        StartAngle: -180
+        EndAngle: 180
         ZoneCount: 1
         RandomPosition: 0
         Vertices: 0
         Limbs: 0
         InnerPointsDist: 0
-        Spin: 0
+        Spin: 1
         SpinSpeed: 50
-        RotationFollowsAim: 0
-        AimAtClosestPlayer: 1
+        RotationFollowsAim: 1
+        AimAtClosestPlayer: 0
         ShootRotation: 0
-        ProjectileCount: 1
-        SpawnFrequency: 0.6
+        ProjectileCount: 4
+        SpawnFrequency: 0.35
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: 0b1334cfbf5c9ff4cadfd430d04c48da, type: 3}
           Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
           LifeTime: 20
-          InitialVelocityStrength: 3
+          InitialVelocityStrength: 4
           InitialRotation: 90
           InitialColor: {r: 1, g: 1, b: 1, a: 1}
           InitialScale: {x: 0.5, y: 0.5, z: 0.5}
@@ -159,9 +159,9 @@ MonoBehaviour:
       AlreadyChosenIndexes: 
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
+      - IsCircle: 0
         IsPolygon: 0
-        IsStar: 0
+        IsStar: 1
         ShowEnterValue: 0
         ShowExitValue: 1
         ShowInfiniteDuration: 0
@@ -170,27 +170,27 @@ MonoBehaviour:
         InfiniteDuration: 0
         BehaviourEnterValue: 15
         BehaviourExitValue: 1
-        patternType: 0
-        CircleCenteredVelocity: 1
-        CenterDistance: 0.1
-        StartAngle: -180
+        patternType: 2
+        CircleCenteredVelocity: 0
+        CenterDistance: 1
+        StartAngle: 0
         EndAngle: 180
         ZoneCount: 1
         RandomPosition: 0
         Vertices: 5
-        Limbs: 6
+        Limbs: 5
         InnerPointsDist: 0.4
         Spin: 0
         SpinSpeed: 0
-        RotationFollowsAim: 0
-        AimAtClosestPlayer: 0
+        RotationFollowsAim: 1
+        AimAtClosestPlayer: 1
         ShootRotation: 0
-        ProjectileCount: 5
+        ProjectileCount: 3
         SpawnFrequency: 1.1
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: 0b1334cfbf5c9ff4cadfd430d04c48da, type: 3}
           Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
-          LifeTime: 1.25
+          LifeTime: 6
           InitialVelocityStrength: 5
           InitialRotation: 90
           InitialColor: {r: 1, g: 1, b: 1, a: 1}
@@ -280,7 +280,7 @@ MonoBehaviour:
               m_RotationOrder: 4
             m_ConstantMin: 0
             m_ConstantMax: 0
-          BulletCurve: 1
+          BulletCurve: 0
           TrajectoryOverTime:
             m_Mode: 0
             m_CurveMultiplier: 0
@@ -297,5 +297,5 @@ MonoBehaviour:
               m_PostInfinity: 2
               m_RotationOrder: 4
             m_ConstantMin: 0
-            m_ConstantMax: 5
+            m_ConstantMax: 0
       AlreadyChosenIndexes: 

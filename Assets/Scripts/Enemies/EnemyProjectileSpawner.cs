@@ -62,6 +62,8 @@ public class EnemyProjectileSpawner : ScriptableObject
         public bool Spin;
         [ShowCondition("Spin")]
         public float SpinSpeed;
+        public bool RotationFollowsAim;
+
         [Space]
         [HideCondition("Spin")]
         public bool AimAtClosestPlayer;
@@ -71,6 +73,7 @@ public class EnemyProjectileSpawner : ScriptableObject
 
         [Tooltip("This is the number of projectiles in an arc for a circle zone,\nOr the number of projectiles per vertice of a polygon or Star")]
         public int ProjectileCount;
+        [Min(.001f)]
         public float SpawnFrequency;
 
         [Space]
