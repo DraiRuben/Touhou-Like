@@ -33,7 +33,9 @@ public class EnemySpawner : MonoBehaviour
                 Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity);
                 if (!KeepChoosenEnemyForEntireWave)
                 {
-                    CachedIndex = (CachedIndex + 1) % (Spawnable.Count-1);
+                    CachedIndex++;
+                    if(CachedIndex>=Spawnable.Count)
+                        CachedIndex = 0;
                 }
             }
             Spawned++;

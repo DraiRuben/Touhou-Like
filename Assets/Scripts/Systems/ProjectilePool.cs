@@ -31,15 +31,16 @@ public class ProjectilePool : MonoBehaviour
         _toReturn.transform.parent = transform;
         _toReturn.transform.localPosition = Vector3.zero;
         _toReturn.transform.rotation = Quaternion.identity;
-        _toReturn.gameObject.SetActive(false);
+        _toReturn.SetActive(false);
     }
-    public void ReturnToPoolLater(GameObject _toReturn,float timeBeforeReturn)
+    public void ReturnToPoolLater(GameObject _toReturn)
     {
-        StartCoroutine(ReturnLater(_toReturn,timeBeforeReturn));
+        StartCoroutine(ReturnLater(_toReturn));
     }
-    private IEnumerator ReturnLater(GameObject _toReturn,float waitTime)
+    private IEnumerator ReturnLater(GameObject _toReturn)
     {
-        yield return new WaitForSeconds(waitTime);
+        ParticleSystem system = _toReturn.GetComponent<ParticleSystem>();
+        yield return new WaitWhile(()=>system.particleCount>0);
         ReturnToPool(_toReturn);
     }
 }

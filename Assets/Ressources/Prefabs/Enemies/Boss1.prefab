@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 249720215604886858}
   - component: {fileID: 8996206972888918458}
   m_Layer: 8
-  m_Name: Mob1
+  m_Name: Boss1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.67, y: 3.69, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_toMakeInvincible: {fileID: 0}
-  m_maxHealth: 3
+  m_maxHealth: 50
 --- !u!114 &566874016809030315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70df3a43b1440564193dc6d8608304c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShootSettings: {fileID: 11400000, guid: ed08e3362a62667449f270f2c7038238, type: 2}
+  ShootSettings: {fileID: 11400000, guid: 9e2df1a269418c84a86f8f5fab05a457, type: 2}
   m_currentBehaviourType: 3
 --- !u!114 &4987834661552481008
 MonoBehaviour:
@@ -79,11 +79,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TriggerNextMovementBehaviour: 0
   m_transitionType: 1
-  IsStationnaryAfterNPaths: 0
-  NPathsBeforeStationnary: 2
+  IsStationnaryAfterNPaths: 1
+  NPathsBeforeStationnary: 3
   LoopPathChoices: 1
   m_pathChoices:
-  - LoopThroughPath: 1
+  - LoopThroughPath: 0
     RegenPathWithLoop: 1
     RandomMovementPath: 1
     PathIndex: 0
@@ -93,7 +93,7 @@ MonoBehaviour:
     IsStationnaryAfterNWaypoints: 0
     NWaypointsBeforeStationnary: 3
     MovemementMultiplier:
-      m_Mode: 0
+      m_Mode: 1
       m_CurveMultiplier: 0
       m_CurveMin:
         serializedVersion: 2
@@ -107,18 +107,18 @@ MonoBehaviour:
         - serializedVersion: 3
           time: 0
           value: 0
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 34
+          inSlope: 2
+          outSlope: 2
+          tangentMode: 0
           weightedMode: 0
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
           time: 1
           value: 1
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 34
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
           weightedMode: 0
           inWeight: 0
           outWeight: 0
@@ -170,7 +170,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 228754f33da0b4344814f7536c676ea2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 948a77cff73b1914596de4b33e6d8a87, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

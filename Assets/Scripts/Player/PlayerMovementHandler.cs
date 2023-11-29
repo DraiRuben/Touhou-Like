@@ -40,36 +40,38 @@ public class PlayerMovementHandler : MonoBehaviour
         if (collision.gameObject.CompareTag("Upgrade"))
         {
             Upgrade upgrade = collision.gameObject.GetComponent<Upgrade>();
-            switch (upgrade.UpgradeInfo)
+            Upgrade.UpgradeType type = upgrade.IsRandom ? upgrade.GetRandomUpgrade() : upgrade.DefaultValue;
+            switch (type)
             {
                 case Upgrade.UpgradeType.Health:
-                    m_healthHandler.Health += upgrade.IntValue;
+                    m_healthHandler.Health += 1;
                     break;
                 case Upgrade.UpgradeType.FireRate:
-                    m_firingSystem.FireRate += upgrade.FloatValue;
+                    m_firingSystem.FireRate *=1.05f;
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.Spread:
-                    m_firingSystem.FireSpreadAngle += upgrade.FloatValue;
+                    m_firingSystem.FireSpreadAngle *=1.15f;
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.BulletCount:
-                    m_firingSystem.BulletCount += upgrade.IntValue;
+                    m_firingSystem.BulletCount += 1;
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.Rebound:
-                    m_firingSystem.BulletRebounds += upgrade.IntValue;
+                    m_firingSystem.BulletRebounds += 1;
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.BulletSize:
-                    m_firingSystem.BulletSize += upgrade.FloatValue;
+                    m_firingSystem.BulletSize *=1.1f;
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.BulletSpeed:
-                    m_firingSystem.BulletSpeed += upgrade.FloatValue;
+                    m_firingSystem.BulletSpeed *=1.1f;
                     m_firingSystem.UpdateFireParameters();
                     break;
             }
+            Destroy(collision.gameObject);
         }
     }
 }

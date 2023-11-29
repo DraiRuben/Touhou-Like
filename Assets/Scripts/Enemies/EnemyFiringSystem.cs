@@ -199,6 +199,7 @@ public class EnemyFiringSystem : MonoBehaviour
                     EmissionModule.SetBurst(0, _burst);
                     var MainModule = system.main;
                     MainModule.loop = false;
+                    if (system.isStopped) system.Play();
                 }
             }
         }
@@ -285,7 +286,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
             index = i * (m_currentBehaviour.ProjectileCount - 1);
             Particles[index].position = EdgePos;
-            Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : AimDir);
+            Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : AimDir) / m_currentBehaviour.CenterDistance;
             Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
             Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -300,7 +301,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 index = u + i * (m_currentBehaviour.ProjectileCount - 1) + 1;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength / m_currentBehaviour.CenterDistance * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : AimDir);
+                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : AimDir) / m_currentBehaviour.CenterDistance;
                 Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -342,7 +343,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
             int firstCornerIndex = i * ((particleCount / m_currentBehaviour.Limbs));
             Particles[firstCornerIndex].position = EdgePos;
-            Particles[firstCornerIndex].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir);
+            Particles[firstCornerIndex].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir)/m_currentBehaviour.CenterDistance;
             Particles[firstCornerIndex].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
             Particles[firstCornerIndex].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
             Particles[firstCornerIndex].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -356,7 +357,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 int index = u + firstCornerIndex;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir);
+                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) / m_currentBehaviour.CenterDistance;
                 Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -371,7 +372,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 int index = u + firstCornerIndex + m_currentBehaviour.ProjectileCount - 1;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir);
+                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) / m_currentBehaviour.CenterDistance;
                 Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -386,7 +387,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 int index = u + firstCornerIndex + 2 * m_currentBehaviour.ProjectileCount - 2;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir);
+                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) / m_currentBehaviour.CenterDistance;
                 Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
                 Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
                 Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
@@ -400,6 +401,9 @@ public class EnemyFiringSystem : MonoBehaviour
     }
     private IEnumerator EmissionRoutine(ParticleSystem system,EnemyProjectileSpawner.ShootZone _Zone, float stopTime = -1,Func<bool> condition = null, Particle[] _particles = null)
     {
+        if(system.isStopped)
+            system.Play();
+
         float timer = float.PositiveInfinity;
         float timeSinceCoroutineStart = 0;
         Particle[] _copy;
@@ -530,7 +534,7 @@ public class EnemyFiringSystem : MonoBehaviour
             }
         }
         system.Stop();
-        ProjectilePool.Instance.ReturnToPoolLater(system.gameObject,system.main.startLifetime.constant);
+        ProjectilePool.Instance.ReturnToPoolLater(system.gameObject);
         if (m_healthComp.Health > 0)
             NextPattern();
         else

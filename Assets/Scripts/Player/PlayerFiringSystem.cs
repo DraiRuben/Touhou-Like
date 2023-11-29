@@ -30,10 +30,11 @@ public class PlayerFiringSystem : MonoBehaviour
     public void UpdateFireParameters()
     {
         var EmissionModule = m_firingSystem.emission;
-        ParticleSystem.Burst ShootBurst = new();
-
-        ShootBurst.repeatInterval = 1f/FireRate;
-        ShootBurst.cycleCount = 0;
+        ParticleSystem.Burst ShootBurst = new()
+        {
+            repeatInterval = 1f / FireRate,
+            cycleCount = 0
+        };
 
         var CountCurve = ShootBurst.count;
         CountCurve.constant = BulletCount;

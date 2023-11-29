@@ -11,7 +11,7 @@ public class EnemySpawnManager : MonoBehaviour
     [SerializeField] private EnemySpawner m_rightSpawner;
     [SerializeField] private EnemySpawner m_bossSpawner;
 
-    private int m_currentWave=0;
+    [SerializeField] private int m_currentWave=0;
 
     private void Awake()
     {
