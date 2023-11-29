@@ -21,7 +21,7 @@ public class PlayerMovementHandler : MonoBehaviour
     {
         if (MovementInput.magnitude != 0)
         {
-            m_rb.velocity = MovementInput.normalized * m_movementSpeed * m_velocityOverTime.Evaluate(m_timeSinceInput);
+            m_rb.velocity = m_movementSpeed * m_velocityOverTime.Evaluate(m_timeSinceInput) * MovementInput.normalized;
             m_timeSinceInput += Time.deltaTime;
         }
         else

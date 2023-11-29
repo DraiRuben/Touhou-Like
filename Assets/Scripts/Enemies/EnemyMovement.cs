@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
+    public static int EnemyCount;
     private Rigidbody2D m_rb;
     private EntityHealthHandler m_healthHandler;
     private EnemyFiringSystem m_firingSystem;
@@ -25,6 +26,14 @@ public class EnemyMovement : MonoBehaviour
         m_rb = GetComponent<Rigidbody2D>();
         m_healthHandler = GetComponent<EntityHealthHandler>();
         m_firingSystem = GetComponent<EnemyFiringSystem>();
+    }
+    private void OnEnable()
+    {
+        EnemyCount++;
+    }
+    private void OnDisable()
+    {
+        EnemyCount--;
     }
     private void Start()
     {

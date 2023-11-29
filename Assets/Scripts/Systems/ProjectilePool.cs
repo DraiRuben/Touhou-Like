@@ -16,6 +16,7 @@ public class ProjectilePool : MonoBehaviour
         if (transform.childCount > 0)
         {
             GameObject _toGive = transform.GetChild(0).gameObject;
+            _toGive.transform.parent = null;
             _toGive.SetActive(true);
             return _toGive;
         }

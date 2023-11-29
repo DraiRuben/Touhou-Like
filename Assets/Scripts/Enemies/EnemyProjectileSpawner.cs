@@ -43,7 +43,8 @@ public class EnemyProjectileSpawner : ScriptableObject
         [ShowCondition("IsCircle")]
         [Min(1)]
         public int ZoneCount = 1;
-
+        [ShowCondition("IsCircle")]
+        public bool RandomPosition;
         [ShowCondition("IsPolygon")]
         [Min(3)]
         public int Vertices = 3;
