@@ -37,5 +37,9 @@ public static class Projectile
         [Space]
         public bool VariableRotation;
         public ParticleSystem.MinMaxCurve RotationOverTime;
+
+        [Space]
+        public bool BulletCurve;
+        public ParticleSystem.MinMaxCurve TrajectoryOverTime;
     }
 }

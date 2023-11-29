@@ -7,6 +7,7 @@ public class EnemyMovement : MonoBehaviour
 {
     private Rigidbody2D m_rb;
     private EntityHealthHandler m_healthHandler;
+    private EnemyFiringSystem m_firingSystem;
     public bool TriggerNextMovementBehaviour;
     private int m_currentPathChoiceIndex;
     [SerializeField] private PathTransitionType m_transitionType;
@@ -23,6 +24,7 @@ public class EnemyMovement : MonoBehaviour
     {
         m_rb = GetComponent<Rigidbody2D>();
         m_healthHandler = GetComponent<EntityHealthHandler>();
+        m_firingSystem = GetComponent<EnemyFiringSystem>();
     }
     private void Start()
     {
@@ -32,6 +34,15 @@ public class EnemyMovement : MonoBehaviour
     {
         m_healthHandler.Health--;
         HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Hit);
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            m_firingSystem.HasCollided = true;
+            m_healthHandler.Health--;
+            HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Explosion);
+        }
     }
     private IEnumerator Movement()
     {
@@ -78,6 +89,7 @@ public class EnemyMovement : MonoBehaviour
                             TriggerNextMovementBehaviour = false;
                             visitedPathsCount++;
                             waitForNext = false;
+                            currentWaypointIndex = 0;
                             if (m_pathChoices[m_currentPathChoiceIndex].RegenPathWithLoop)
                             {
                                 Waypoints = GetWaypoints();
@@ -85,7 +97,7 @@ public class EnemyMovement : MonoBehaviour
                             }
                         }
                         //if we didn't reach the N path count limit or need to trigger the next behaviour at all costs
-                        if ((!IsStationnaryAfterNPaths || ++visitedPathsCount < NPathsBeforeStationnary))
+                        else if ((!IsStationnaryAfterNPaths || ++visitedPathsCount < NPathsBeforeStationnary))
                         {
                             visitedPathsCount++;
                             visitedWaypointsCount = 0;

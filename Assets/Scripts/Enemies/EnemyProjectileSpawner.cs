@@ -94,7 +94,7 @@ public class EnemyProjectileSpawner : ScriptableObject
                 zone.IsStar = zone.patternType == ShootZone.PatternType.Star;
                 zone.BehaviourType = behaviour.Key;
                 zone.ShowInfiniteDuration = zone.BehaviourType == BehaviourChangeType.Time;
-                zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType == BehaviourChangeType.Life;
+                zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType != BehaviourChangeType.Time;
                 zone.ShowEnterValue = zone.BehaviourType == BehaviourChangeType.Life;
                 if (Mathf.Abs(zone.EndAngle - zone.StartAngle) * zone.ZoneCount > 360)
                 {
