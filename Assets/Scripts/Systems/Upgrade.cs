@@ -5,11 +5,10 @@ using UnityEngine;
 
 public class Upgrade : MonoBehaviour
 {
-    public bool IsRandom;
-    public UpgradeType DefaultValue;
+    public List<UpgradeType> ValidTypes;
     public UpgradeType GetRandomUpgrade()
     {
-        return (UpgradeType)UnityEngine.Random.Range(0, 7);
+        return ValidTypes[UnityEngine.Random.Range(0, ValidTypes.Count)];
     }
     public enum UpgradeType
     {

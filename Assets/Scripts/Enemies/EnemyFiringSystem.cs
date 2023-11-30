@@ -174,7 +174,9 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 //Burst Emission
                 Burst[] burst = new Burst[1];
-                burst[0].count = m_currentBehaviour.ProjectileCount;
+                MinMaxCurve countCurve = burst[0].count;
+                countCurve.constant = m_currentBehaviour.ProjectileCount;
+                burst[0].count = countCurve;
                 burst[0].repeatInterval = m_currentBehaviour.SpawnFrequency;
                 burst[0].cycleCount = 0;
                 system.emission.SetBursts(burst);
@@ -647,7 +649,10 @@ public class EnemyFiringSystem : MonoBehaviour
             VelocityModule.space = ParticleSystemSimulationSpace.World;
             VelocityModule.speedModifier = m_currentBehaviour.ProjectileParameters.VelocityOverTime;
         }
-
+        else
+        {
+            VelocityModule.speedModifier = new(1);
+        }
 
         //Bullet curve
         if (m_currentBehaviour.ProjectileParameters.BulletCurve)
@@ -656,7 +661,10 @@ public class EnemyFiringSystem : MonoBehaviour
             VelocityModule.space = ParticleSystemSimulationSpace.World;
             VelocityModule.orbitalZ = m_currentBehaviour.ProjectileParameters.TrajectoryOverTime;
         }
-
+        else
+        {
+            VelocityModule.orbitalZ = new();
+        }
         if (!m_currentBehaviour.ProjectileParameters.BulletCurve && !m_currentBehaviour.ProjectileParameters.VariableVelocity)
         {
             VelocityModule.enabled = false;

@@ -45,7 +45,7 @@ public class PlayerMovementHandler : MonoBehaviour
         if (collision.gameObject.CompareTag("Upgrade"))
         {
             Upgrade upgrade = collision.gameObject.GetComponent<Upgrade>();
-            Upgrade.UpgradeType type = upgrade.IsRandom ? upgrade.GetRandomUpgrade() : upgrade.DefaultValue;
+            Upgrade.UpgradeType type = upgrade.GetRandomUpgrade();
             switch (type)
             {
                 case Upgrade.UpgradeType.Health:
