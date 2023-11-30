@@ -178,7 +178,7 @@ MonoBehaviour:
         ZoneCount: 1
         RandomPosition: 0
         Vertices: 5
-        Limbs: 5
+        Limbs: 4
         InnerPointsDist: 0.4
         Spin: 0
         SpinSpeed: 0
@@ -190,8 +190,8 @@ MonoBehaviour:
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: 0b1334cfbf5c9ff4cadfd430d04c48da, type: 3}
           Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
-          LifeTime: 6
-          InitialVelocityStrength: 5
+          LifeTime: 20
+          InitialVelocityStrength: 3
           InitialRotation: 90
           InitialColor: {r: 1, g: 1, b: 1, a: 1}
           InitialScale: {x: 0.5, y: 0.4, z: 0.5}

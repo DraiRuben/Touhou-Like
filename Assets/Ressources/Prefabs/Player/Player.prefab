@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 005d2eccbe9ea624ba647a2842ac2268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShieldCooldown: 5
+  ShieldCooldown: 8
   AbilityCooldown: 5
 --- !u!50 &9003239649907377157
 Rigidbody2D:

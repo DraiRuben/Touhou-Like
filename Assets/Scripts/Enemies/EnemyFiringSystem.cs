@@ -202,6 +202,7 @@ public class EnemyFiringSystem : MonoBehaviour
                     var MainModule = system.main;
                     MainModule.loop = false;
                     if (system.isStopped) system.Play();
+                    ProjectilePool.Instance.ReturnToPoolLater(system);
                     Destroy(gameObject,.1f);
                 }
             }
@@ -582,7 +583,7 @@ public class EnemyFiringSystem : MonoBehaviour
         ShapeModule EmitterModule = system.shape;
         EmitterModule.enabled = true;
 
-        //Emissiob module
+        //Emission module
         EmissionModule EmissionModule = system.emission;
         EmissionModule.enabled = true;
 

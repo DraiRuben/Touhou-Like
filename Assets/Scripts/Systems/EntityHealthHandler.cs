@@ -50,7 +50,7 @@ public class EntityHealthHandler : MonoBehaviour
                 {
                     OnHealthChanged.Invoke();
                 }
-                else
+                else if (m_health ==0)
                 {
                     if (IsPlayer) m_deathCount++;
                     OnDeath.Invoke();
@@ -93,7 +93,7 @@ public class EntityHealthHandler : MonoBehaviour
         else
         {
             int respawnWave = EnemySpawnManager.Instance.m_currentWave + m_deathCount;
-            yield return new WaitUntil(() => EnemySpawnManager.Instance.m_currentWave < respawnWave);
+            yield return new WaitWhile(() => EnemySpawnManager.Instance.m_currentWave < respawnWave);
             m_playerMovement.enabled = true;
             m_playerWeapon.enabled = true;
             m_playerCollider.enabled = true;

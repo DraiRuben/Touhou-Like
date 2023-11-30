@@ -50,8 +50,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfc9c414b48c5145915036a385b8463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_isPlayer: 0
-  DeathCount: 0
+  IsPlayer: 0
+  m_playerWeapon: {fileID: 0}
+  m_playerMovement: {fileID: 0}
+  m_playerCollider: {fileID: 0}
+  m_playerSprite: {fileID: 0}
   m_toMakeInvincible: {fileID: 0}
   m_maxHealth: 50
 --- !u!114 &566874016809030315
@@ -80,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc95cf4774700a94aacc32a433979113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsBoss: 0
+  IsBoss: 1
   TriggerNextMovementBehaviour: 0
   m_transitionType: 1
   IsStationnaryAfterNPaths: 1
@@ -98,7 +101,7 @@ MonoBehaviour:
     NWaypointsBeforeStationnary: 3
     MovemementMultiplier:
       m_Mode: 1
-      m_CurveMultiplier: 0
+      m_CurveMultiplier: 5
       m_CurveMin:
         serializedVersion: 2
         m_Curve: []

@@ -32,6 +32,7 @@ public class UI : MonoBehaviour
         m_playerInput.OnShieldUse.AddListener(() => StartCoroutine(RefreshShield()));
         m_playerInput.OnScoreChange.AddListener (()=> m_scoreText.text = m_playerInput.Score.ToString());
         m_healthHandler.OnHealthChanged.AddListener(UpdateHealthDisplay);
+        m_healthHandler.OnDeath.AddListener(UpdateHealthDisplay);
 
         EndScreen.Instance.Scores.Add(m_scoreText.gameObject);
         UpdateHealthDisplay();

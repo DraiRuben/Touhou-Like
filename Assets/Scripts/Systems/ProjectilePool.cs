@@ -39,6 +39,8 @@ public class ProjectilePool : MonoBehaviour
     }
     private IEnumerator ReturnLater(ParticleSystem _toReturn)
     {
+        yield return null;
+        yield return null;
         ParticleSystem system = _toReturn.GetComponent<ParticleSystem>();
         yield return new WaitUntil(()=>system.particleCount<=0);
         ReturnToPool(_toReturn);
