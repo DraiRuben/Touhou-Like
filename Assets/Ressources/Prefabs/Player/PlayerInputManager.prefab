@@ -89,3 +89,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbf3d602f1828e44a90db79b16324df7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_players: []
+  UICanvas: {fileID: 0}
+  UIPrefab: {fileID: 1110040227285935638, guid: 3267ce1367d4a5e479533d512116fea7, type: 3}

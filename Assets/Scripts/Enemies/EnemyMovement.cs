@@ -6,11 +6,9 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     public static int EnemyCount;
-    private Rigidbody2D m_rb;
-    private EntityHealthHandler m_healthHandler;
-    private EnemyFiringSystem m_firingSystem;
+
+    public bool IsBoss;
     public bool TriggerNextMovementBehaviour;
-    private int m_currentPathChoiceIndex;
     [SerializeField] private PathTransitionType m_transitionType;
     [Space]
     public bool IsStationnaryAfterNPaths;
@@ -18,9 +16,13 @@ public class EnemyMovement : MonoBehaviour
     [Min(1)]
     public int NPathsBeforeStationnary;
 
-
     [ShowCondition("ShowLoopPathChoices")][SerializeField] private bool LoopPathChoices;
     [SerializeField] private List<PathChoice> m_pathChoices;
+
+    private int m_currentPathChoiceIndex;
+    private Rigidbody2D m_rb;
+    private EntityHealthHandler m_healthHandler;
+    private EnemyFiringSystem m_firingSystem;
     private void Awake()
     {
         m_rb = GetComponent<Rigidbody2D>();
@@ -42,6 +44,14 @@ public class EnemyMovement : MonoBehaviour
     private void OnParticleCollision(GameObject other)
     {
         m_healthHandler.Health--;
+        if (IsBoss)
+        {
+            other.transform.parent.GetComponent<PlayerInputReceiver>().Score += 10;
+        }
+        if (m_healthHandler.Health <= 0)
+        {
+            other.transform.parent.GetComponent<PlayerInputReceiver>().Score += m_healthHandler.MaxHealth*113;
+        }
         HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Hit);
     }
     private void OnCollisionEnter2D(Collision2D collision)

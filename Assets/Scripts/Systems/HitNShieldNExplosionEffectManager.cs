@@ -6,6 +6,7 @@ public class HitNShieldNExplosionEffectManager : MonoBehaviour
     [SerializeField] private ParticleSystem m_hitParticleSystem;
     [SerializeField] private ParticleSystem m_shieldParticleSystem;
     [SerializeField] private ParticleSystem m_explosionParticleSystem;
+    [SerializeField] private GameObject m_shieldPrefab;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -36,6 +37,8 @@ public class HitNShieldNExplosionEffectManager : MonoBehaviour
                 newParticle[0].remainingLifetime = 0.9f;
                 m_shieldParticleSystem.SetParticles(newParticle, 1, m_shieldParticleSystem.particleCount);
                 if (m_shieldParticleSystem.isStopped) m_shieldParticleSystem.Play();
+
+                Destroy(Instantiate(m_shieldPrefab,_worldPos,Quaternion.identity),2f);
                 break;
         }
 

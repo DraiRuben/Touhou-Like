@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -6,6 +9,18 @@ using UnityEngine.InputSystem;
 public class PlayerInputReceiver : MonoBehaviour
 {
     private PlayerMovementHandler m_movementHandler;
+    public int Score { get { return m_score; } set { m_score = value; OnScoreChange.Invoke(); } }
+    private int m_score;
+    [NonSerialized] public UnityEvent OnScoreChange = new();
+ 
+    private bool CanUseShield = true;
+    public float ShieldCooldown;
+    [NonSerialized] public UnityEvent OnShieldUse = new();
+
+    private bool CanUseAbility = true;
+    public float AbilityCooldown;
+    [NonSerialized] public UnityEvent OnAbilityUse = new();
+
     private void Awake()
     {
         m_movementHandler = GetComponent<PlayerMovementHandler>();
@@ -17,17 +32,32 @@ public class PlayerInputReceiver : MonoBehaviour
 
     public void Ability(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
+        if (ctx.performed && CanUseAbility)
         {
-
+            CanUseAbility = false;
+            OnAbilityUse.Invoke();
+            StartCoroutine(RefreshAbility());
         }
+    }
+    private IEnumerator RefreshAbility()
+    {
+        yield return new WaitForSeconds(AbilityCooldown);
+        CanUseAbility = true;
     }
     public void Shield(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
+        if (ctx.performed && CanUseShield)
         {
-
+            CanUseShield = false;
+            OnShieldUse.Invoke();
+            HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Shield);
+            StartCoroutine(RefreshShield());
         }
+    }
+    private IEnumerator RefreshShield()
+    {
+        yield return new WaitForSeconds(ShieldCooldown);
+        CanUseShield = true;
     }
     public void Pause(InputAction.CallbackContext ctx)
     {

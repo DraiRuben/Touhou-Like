@@ -8,6 +8,9 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance;
     private PlayerInputManager m_inputManager;
     public List<GameObject> m_players = new();
+
+    [SerializeField] private Transform UICanvas;
+    [SerializeField] private GameObject UIPrefab;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -17,6 +20,7 @@ public class PlayerManager : MonoBehaviour
     public void OnPlayerJoined(PlayerInput _input)
     {
         m_players.Add(_input.gameObject);
+        Instantiate(UIPrefab, UICanvas);
     }
     public GameObject GetClosestPlayer(Vector3 _position)
     {

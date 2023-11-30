@@ -134,6 +134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfc9c414b48c5145915036a385b8463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isPlayer: 0
+  DeathCount: 0
   m_toMakeInvincible: {fileID: 0}
   m_maxHealth: 3
 --- !u!114 &566874016809030315
@@ -162,6 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc95cf4774700a94aacc32a433979113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsBoss: 0
   TriggerNextMovementBehaviour: 0
   m_transitionType: 1
   IsStationnaryAfterNPaths: 0
@@ -254,7 +257,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 4935b1bb1450ecc45ad894f15a6f19ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -319,7 +322,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7559233141233196040}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

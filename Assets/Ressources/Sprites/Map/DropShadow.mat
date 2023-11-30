@@ -90,6 +90,6 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Offset: {r: -7.1, g: -3.56, b: 0, a: 0}
     - _ShadowColor: {r: 0, g: 0, b: 0, a: 0.6392157}
-    - _ShadowOffset: {r: -0.01, g: -0.26, b: 0, a: 0}
+    - _ShadowOffset: {r: -0.01, g: -0.12, b: 0, a: 0}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   m_BuildTextureStacks: []

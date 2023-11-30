@@ -544,10 +544,10 @@ public class EnemyFiringSystem : MonoBehaviour
             }
         }
         system.Stop();
-        ProjectilePool.Instance.ReturnToPoolLater(system.gameObject);
+        ProjectilePool.Instance.ReturnToPoolLater(system);
         if (m_healthComp.Health > 0)
             NextPattern();
-        else
+        else if(death || !ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Death))
             Destroy(gameObject);
     }
     private void SetupParticleSystemParameters(ParticleSystem system)
