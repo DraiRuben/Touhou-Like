@@ -11,12 +11,30 @@ public class EnemySpawnManager : MonoBehaviour
     [SerializeField] private EnemySpawner m_rightSpawner;
     [SerializeField] private EnemySpawner m_bossSpawner;
 
-    [SerializeField] private int m_currentWave=0;
+    public int m_currentWave=0;
 
+    [SerializeField] private GameObject m_healthUpgrade;
+    [SerializeField] private GameObject m_statsUpgrade;
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+    public void TrySpawnUpgrade(Transform _transform)
+    {
+        int result = UnityEngine.Random.Range(0, 2);
+        if(result == 1)
+        {
+            result = UnityEngine.Random.Range(0, 2);
+            if(result == 0)
+            {
+                Instantiate(m_healthUpgrade, _transform.position, Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(m_statsUpgrade, _transform.position, Quaternion.identity);
+            }
+        }
     }
     private void Update()
     {

@@ -206,6 +206,7 @@ MonoBehaviour:
   m_ability: {fileID: 5750131018107486989}
   m_shield: {fileID: 1088931966185879526}
   m_health: {fileID: 6548139805322914186}
+  m_player: {fileID: 1486042328110610515}
   m_healthCount: {fileID: 2767334806679326879}
 --- !u!1 &1331627394417665184
 GameObject:

@@ -29,6 +29,11 @@ public class PlayerMovementHandler : MonoBehaviour
             m_timeSinceInput = 0;
         }
     }
+    private void OnDisable()
+    {
+        m_rb.velocity = Vector2.zero;
+        m_timeSinceInput = 0;
+    }
     private void OnParticleCollision(GameObject other)
     {
         m_healthHandler.Health--;
@@ -51,7 +56,7 @@ public class PlayerMovementHandler : MonoBehaviour
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.Spread:
-                    m_firingSystem.FireSpreadAngle *=1.15f;
+                    m_firingSystem.FireSpreadAngle *=1.25f;
                     m_firingSystem.UpdateFireParameters();
                     break;
                 case Upgrade.UpgradeType.BulletCount:

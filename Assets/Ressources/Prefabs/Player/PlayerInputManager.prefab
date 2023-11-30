@@ -90,5 +90,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_players: []
+  m_playerSprites:
+  - {fileID: 21300000, guid: 6ad47c9262ea9314c84e3142a9ec6721, type: 3}
+  - {fileID: 21300000, guid: 54abcbbd88f1f1d47b28700db93ca1e1, type: 3}
+  - {fileID: 21300000, guid: fc3ef9a9bedf7d043bd002e7d0c703df, type: 3}
+  - {fileID: 21300000, guid: 66e412c991d349d459e5a2de9b0f9643, type: 3}
   UICanvas: {fileID: 0}
   UIPrefab: {fileID: 1110040227285935638, guid: 3267ce1367d4a5e479533d512116fea7, type: 3}

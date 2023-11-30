@@ -11,8 +11,9 @@ public class UI : MonoBehaviour
     [SerializeField] private Image m_ability;
     [SerializeField] private Image m_shield;
     [SerializeField] private Image m_health;
+    [SerializeField] private Image m_player;
     [SerializeField] private TextMeshProUGUI m_healthCount;
-    private PlayerInputReceiver m_player;
+    private PlayerInputReceiver m_playerInput;
     private EntityHealthHandler m_healthHandler;
 
     private void Start()
@@ -21,27 +22,30 @@ public class UI : MonoBehaviour
         m_scoreText.text = "0";
         m_ability.enabled = true;
         m_shield.enabled = true;
-        m_player = PlayerManager.Instance.m_players[PlayerManager.Instance.m_players.Count - 1].GetComponent<PlayerInputReceiver>();
+        m_playerInput = PlayerManager.Instance.m_players[PlayerManager.Instance.m_players.Count - 1].GetComponent<PlayerInputReceiver>();
+        m_player.sprite = PlayerManager.Instance.m_playerSprites[PlayerManager.Instance.m_players.Count - 1];
+        
         //need to subscribe to on score changed event
-        m_healthHandler = m_player.GetComponent<EntityHealthHandler>();
+        m_healthHandler = m_playerInput.GetComponent<EntityHealthHandler>();
 
-        m_player.OnAbilityUse.AddListener(() => StartCoroutine(RefreshAbility()));
-        m_player.OnShieldUse.AddListener(() => StartCoroutine(RefreshShield()));
-        m_player.OnScoreChange.AddListener (()=> m_scoreText.text = m_player.Score.ToString());
+        m_playerInput.OnAbilityUse.AddListener(() => StartCoroutine(RefreshAbility()));
+        m_playerInput.OnShieldUse.AddListener(() => StartCoroutine(RefreshShield()));
+        m_playerInput.OnScoreChange.AddListener (()=> m_scoreText.text = m_playerInput.Score.ToString());
         m_healthHandler.OnHealthChanged.AddListener(UpdateHealthDisplay);
 
+        EndScreen.Instance.Scores.Add(m_scoreText.gameObject);
         UpdateHealthDisplay();
     }
     private IEnumerator RefreshAbility()
     {
         m_ability.enabled = false;
-        yield return new WaitForSeconds(m_player.AbilityCooldown);
+        yield return new WaitForSeconds(m_playerInput.AbilityCooldown);
         m_ability.enabled = true;
     }
     private IEnumerator RefreshShield()
     {
         m_shield.enabled = false;
-        yield return new WaitForSeconds(m_player.ShieldCooldown);
+        yield return new WaitForSeconds(m_playerInput.ShieldCooldown);
         m_shield.enabled = true;
     }
     private void UpdateHealthDisplay()

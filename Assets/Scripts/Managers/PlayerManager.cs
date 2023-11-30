@@ -8,7 +8,7 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance;
     private PlayerInputManager m_inputManager;
     public List<GameObject> m_players = new();
-
+    public List<Sprite> m_playerSprites;
     [SerializeField] private Transform UICanvas;
     [SerializeField] private GameObject UIPrefab;
     private void Awake()
@@ -20,7 +20,9 @@ public class PlayerManager : MonoBehaviour
     public void OnPlayerJoined(PlayerInput _input)
     {
         m_players.Add(_input.gameObject);
+        _input.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = m_playerSprites[m_players.Count - 1];
         Instantiate(UIPrefab, UICanvas);
+        EntityHealthHandler.AlivePlayers++;
     }
     public GameObject GetClosestPlayer(Vector3 _position)
     {

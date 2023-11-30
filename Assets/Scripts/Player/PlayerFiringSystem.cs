@@ -27,6 +27,15 @@ public class PlayerFiringSystem : MonoBehaviour
             manuallyUpdate = false;
         }
     }
+    private void OnDisable()
+    {
+        m_firingSystem.Stop();
+    }
+    private void OnEnable()
+    {
+        if(m_firingSystem.isStopped)
+            m_firingSystem.Play();
+    }
     public void UpdateFireParameters()
     {
         var EmissionModule = m_firingSystem.emission;

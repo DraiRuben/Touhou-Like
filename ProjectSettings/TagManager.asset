@@ -17,7 +17,7 @@ TagManager:
   - Enemies
   - PlayerInvincible
   - Upgrade
-  - 
+  - UpgradeCollector
   - 
   - 
   - 
@@ -44,4 +44,7 @@ TagManager:
     locked: 0
   - name: Bullets
     uniqueID: 3567748739
+    locked: 0
+  - name: UI
+    uniqueID: 84190777
     locked: 0

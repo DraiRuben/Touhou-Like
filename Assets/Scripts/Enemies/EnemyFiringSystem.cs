@@ -22,15 +22,14 @@ public class EnemyFiringSystem : MonoBehaviour
     private EnemyProjectileSpawner.ShootZone m_currentBehaviour;
     private Transform m_transform;
     private EnemyMovement m_movementHandler;
-    private Rigidbody2D m_rb;
     private void Awake()
     {
         m_healthComp = GetComponent<EntityHealthHandler>();
         m_healthComp.OnHealthChanged.AddListener(() => IsInPriorityShootingBehaviour = true);
         m_healthComp.OnDeath.AddListener(() => IsInPriorityShootingBehaviour = true);
+        m_healthComp.OnDeath.AddListener(() => EnemySpawnManager.Instance.TrySpawnUpgrade(transform));
         m_transform = transform;
         m_movementHandler = GetComponent<EnemyMovement>();
-        m_rb = GetComponent<Rigidbody2D>();
     }
     private void Start()
     {
@@ -96,6 +95,7 @@ public class EnemyFiringSystem : MonoBehaviour
                 GetComponent<Rigidbody2D>().velocity = Vector3.zero;
                 GetComponent<SpriteRenderer>().enabled = false;
                 GetComponent<Collider2D>().enabled = false;
+                transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
                 m_movementHandler.enabled = false;
                 m_stopEmission = true;
                 m_movementHandler.StopAllCoroutines();
@@ -202,6 +202,7 @@ public class EnemyFiringSystem : MonoBehaviour
                     var MainModule = system.main;
                     MainModule.loop = false;
                     if (system.isStopped) system.Play();
+                    Destroy(gameObject,.1f);
                 }
             }
         }
