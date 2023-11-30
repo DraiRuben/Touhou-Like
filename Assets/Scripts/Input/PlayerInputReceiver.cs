@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerMovementHandler))]
+[RequireComponent(typeof(PlayerAbility))]
+[RequireComponent(typeof(PlayerFiringSystem))]
 public class PlayerInputReceiver : MonoBehaviour
 {
     private PlayerMovementHandler m_movementHandler;

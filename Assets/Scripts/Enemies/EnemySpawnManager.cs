@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -11,10 +13,13 @@ public class EnemySpawnManager : MonoBehaviour
     [SerializeField] private EnemySpawner m_rightSpawner;
     [SerializeField] private EnemySpawner m_bossSpawner;
 
-    public int m_currentWave=0;
+    public int m_currentWave = 0;
 
     [SerializeField] private GameObject m_healthUpgrade;
     [SerializeField] private GameObject m_statsUpgrade;
+
+    [NonSerialized] public List<GameObject> m_enemies = new();
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -35,6 +40,16 @@ public class EnemySpawnManager : MonoBehaviour
                 Instantiate(m_statsUpgrade, _transform.position, Quaternion.identity);
             }
         }
+    }
+    public GameObject GetClosestEnemy(Vector2 _position)
+    {
+        if (m_enemies.Count > 0)
+        {
+            m_enemies = m_enemies.Where(x => x != null).ToList();
+            var AliveEnemies = m_enemies.Where(x =>x.GetComponent<EntityHealthHandler>().Health > 0).ToList();
+            return AliveEnemies.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+        }
+        else return null;
     }
     private void Update()
     {

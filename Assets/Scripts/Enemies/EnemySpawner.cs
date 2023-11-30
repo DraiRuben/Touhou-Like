@@ -26,11 +26,11 @@ public class EnemySpawner : MonoBehaviour
                 {
                     CachedIndex = Random.Range(0, Spawnable.Count);
                 }
-                Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity);
+                EnemySpawnManager.Instance.m_enemies.Add(Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity));
             }
             else
             {
-                Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity);
+                EnemySpawnManager.Instance.m_enemies.Add(Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity));
                 if (!KeepChoosenEnemyForEntireWave)
                 {
                     CachedIndex++;

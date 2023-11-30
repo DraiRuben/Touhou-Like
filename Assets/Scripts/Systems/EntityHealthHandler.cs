@@ -11,6 +11,7 @@ public class EntityHealthHandler : MonoBehaviour
     public bool IsPlayer;
     [ShowCondition("IsPlayer")][SerializeField] private PlayerFiringSystem m_playerWeapon;
     [ShowCondition("IsPlayer")][SerializeField] private PlayerMovementHandler m_playerMovement;
+    [ShowCondition("IsPlayer")][SerializeField] private PlayerAbility m_playerAbility;
     [ShowCondition("IsPlayer")][SerializeField] private BoxCollider2D m_playerCollider;
     [ShowCondition("IsPlayer")][SerializeField] private SpriteRenderer m_playerSprite;
 
@@ -85,6 +86,7 @@ public class EntityHealthHandler : MonoBehaviour
         m_playerCollider.enabled = false;
         m_playerSprite.enabled = false;
         m_playerWeapon.enabled = false;
+        m_playerAbility.enabled = false;
         if (AlivePlayers <= 0)
         {
             EndScreen.Instance.DisplayScores();
@@ -98,6 +100,7 @@ public class EntityHealthHandler : MonoBehaviour
             m_playerWeapon.enabled = true;
             m_playerCollider.enabled = true;
             m_playerSprite.enabled = true;
+            m_playerAbility.enabled = true;
             Health = m_maxHealth;
             AlivePlayers++;
         }

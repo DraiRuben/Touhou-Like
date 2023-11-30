@@ -161,7 +161,7 @@ public class EnemyFiringSystem : MonoBehaviour
             {
                 ParticleSystem system = _toUse[i];
                 system.transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
-                SetupParticleSystemParameters(system);
+                SetupParticleSystemParameters(system, m_currentBehaviour);
 
                 //Shape Module
                 ShapeModule ShapeModule = system.shape;
@@ -213,8 +213,8 @@ public class EnemyFiringSystem : MonoBehaviour
         {
             ParticleSystem system = ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>();
 
-            SetupParticleSystemParameters(system);
-            Particle[] Particles = ComputePolygon();
+            SetupParticleSystemParameters(system, m_currentBehaviour);
+            Particle[] Particles = ComputePolygon(m_currentBehaviour);
 
             ShapeModule ShapeModule = system.shape;
             ShapeModule.enabled = false;
@@ -238,9 +238,9 @@ public class EnemyFiringSystem : MonoBehaviour
         else if (m_currentBehaviour.patternType == EnemyProjectileSpawner.ShootZone.PatternType.Star)
         {
             ParticleSystem system = ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>();
-            SetupParticleSystemParameters(system);
+            SetupParticleSystemParameters(system, m_currentBehaviour);
 
-            Particle[] Particles = ComputeStar();
+            Particle[] Particles = ComputeStar(m_currentBehaviour);
 
             ShapeModule ShapeModule = system.shape;
             ShapeModule.enabled = false;
@@ -261,13 +261,13 @@ public class EnemyFiringSystem : MonoBehaviour
             }
         }
     }
-    private Particle[] ComputePolygon()
+    public static Particle[] ComputePolygon(EnemyProjectileSpawner.ShootZone _attackInfo)
     {
-        float angleSpan = Mathf.Abs(m_currentBehaviour.EndAngle - m_currentBehaviour.StartAngle);
-        float angle = 360f / m_currentBehaviour.Vertices;
-        int verticeCount = m_currentBehaviour.Vertices;
+        float angleSpan = Mathf.Abs(_attackInfo.EndAngle - _attackInfo.StartAngle);
+        float angle = 360f / _attackInfo.Vertices;
+        int verticeCount = _attackInfo.Vertices;
 
-        int particleCount = verticeCount * m_currentBehaviour.ProjectileCount - verticeCount;
+        int particleCount = verticeCount * _attackInfo.ProjectileCount - verticeCount;
         Particle[] Particles = new Particle[particleCount];
         Vector3 EdgePos = new();
         Vector3 NextEdgePos = new();
@@ -278,126 +278,126 @@ public class EnemyFiringSystem : MonoBehaviour
         float toRot;
         int index;
 
-        Vector3 AimDir = m_currentBehaviour.CenterDistance * new Vector3(Mathf.Cos(m_currentBehaviour.StartAngle * Mathf.Deg2Rad), Mathf.Sin(m_currentBehaviour.StartAngle * Mathf.Deg2Rad));
+        Vector3 AimDir = _attackInfo.CenterDistance * new Vector3(Mathf.Cos(_attackInfo.StartAngle * Mathf.Deg2Rad), Mathf.Sin(_attackInfo.StartAngle * Mathf.Deg2Rad));
         for (int i = 0; i < verticeCount; i++)
         {
 
-            toRot = (angle * i + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad;
+            toRot = (angle * i + _attackInfo.StartAngle) * Mathf.Deg2Rad;
             EdgePos.Set(
-                Mathf.Cos(toRot) * m_currentBehaviour.CenterDistance,
-                Mathf.Sin(toRot) * m_currentBehaviour.CenterDistance, 0);
+                Mathf.Cos(toRot) * _attackInfo.CenterDistance,
+                Mathf.Sin(toRot) * _attackInfo.CenterDistance, 0);
             NextEdgePos.Set(
-                Mathf.Cos((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance,
-                Mathf.Sin((angle * (i + 1) + m_currentBehaviour.StartAngle) * Mathf.Deg2Rad) * m_currentBehaviour.CenterDistance, 0);
+                Mathf.Cos((angle * (i + 1) + _attackInfo.StartAngle) * Mathf.Deg2Rad) * _attackInfo.CenterDistance,
+                Mathf.Sin((angle * (i + 1) + _attackInfo.StartAngle) * Mathf.Deg2Rad) * _attackInfo.CenterDistance, 0);
 
-            index = i * (m_currentBehaviour.ProjectileCount - 1);
+            index = i * (_attackInfo.ProjectileCount - 1);
             Particles[index].position = EdgePos;
-            Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : AimDir) / m_currentBehaviour.CenterDistance;
-            Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
-            Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-            Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
+            Particles[index].velocity = _attackInfo.ProjectileParameters.InitialVelocityStrength * (_attackInfo.CircleCenteredVelocity ? EdgePos : AimDir) / _attackInfo.CenterDistance;
+            Particles[index].startSize3D = new Vector3(_attackInfo.ProjectileParameters.InitialScale.x, _attackInfo.ProjectileParameters.InitialScale.y, 1);
+            Particles[index].startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+            Particles[index].remainingLifetime = _attackInfo.ProjectileParameters.LifeTime;
             Particles[index].startColor = UnityEngine.Color.white;
             Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(EdgePos.y, EdgePos.x));
 
 
-            for (int u = 0; u < m_currentBehaviour.ProjectileCount - 2; u++)
+            for (int u = 0; u < _attackInfo.ProjectileCount - 2; u++)
             {
-                x1 = Mathf.Lerp(EdgePos.x, NextEdgePos.x, (float)(u + 1) / (m_currentBehaviour.ProjectileCount - 1));
-                y1 = Mathf.Lerp(EdgePos.y, NextEdgePos.y, (float)(u + 1) / (m_currentBehaviour.ProjectileCount - 1));
+                x1 = Mathf.Lerp(EdgePos.x, NextEdgePos.x, (float)(u + 1) / (_attackInfo.ProjectileCount - 1));
+                y1 = Mathf.Lerp(EdgePos.y, NextEdgePos.y, (float)(u + 1) / (_attackInfo.ProjectileCount - 1));
 
-                index = u + i * (m_currentBehaviour.ProjectileCount - 1) + 1;
+                index = u + i * (_attackInfo.ProjectileCount - 1) + 1;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : AimDir) / m_currentBehaviour.CenterDistance;
-                Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
-                Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-                Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
+                Particles[index].velocity = _attackInfo.ProjectileParameters.InitialVelocityStrength * (_attackInfo.CircleCenteredVelocity ? Particles[index].position : AimDir) / _attackInfo.CenterDistance;
+                Particles[index].startSize3D = new Vector3(_attackInfo.ProjectileParameters.InitialScale.x, _attackInfo.ProjectileParameters.InitialScale.y, 1);
+                Particles[index].startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+                Particles[index].remainingLifetime = _attackInfo.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
                 Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
             }
         }
         return Particles;
     }
-    private Particle[] ComputeStar()
+    public static Particle[] ComputeStar(EnemyProjectileSpawner.ShootZone _attackInfo)
     {
-        float angle = 360f / m_currentBehaviour.Limbs;
-        int particleCount = m_currentBehaviour.Limbs * ((m_currentBehaviour.ProjectileCount - 1) * 2 + (int)(m_currentBehaviour.ProjectileCount / 1.2f) - 2);
+        float angle = 360f / _attackInfo.Limbs;
+        int particleCount = _attackInfo.Limbs * ((_attackInfo.ProjectileCount - 1) * 2 + (int)(_attackInfo.ProjectileCount / 1.2f) - 2);
         Particle[] Particles = new Particle[particleCount];
         Vector3 EdgePos = new();
         Vector3 LeftEdgePos = new();
         Vector3 RightEdgePos = new();
-        Vector3 MedianDir = new Vector3(Mathf.Cos((m_currentBehaviour.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((m_currentBehaviour.StartAngle) * Mathf.Deg2Rad));
+        Vector3 MedianDir = new Vector3(Mathf.Cos((_attackInfo.StartAngle) * Mathf.Deg2Rad), Mathf.Sin((_attackInfo.StartAngle) * Mathf.Deg2Rad));
         float toRot;
         float x1;
         float y1;
-        for (int i = 0; i < m_currentBehaviour.Limbs; i++)
+        for (int i = 0; i < _attackInfo.Limbs; i++)
         {
-            toRot = 2 * Mathf.PI * i / m_currentBehaviour.Limbs + m_currentBehaviour.StartAngle * Mathf.Deg2Rad;
+            toRot = 2 * Mathf.PI * i / _attackInfo.Limbs + _attackInfo.StartAngle * Mathf.Deg2Rad;
             EdgePos.Set(
-                Mathf.Cos(toRot) * m_currentBehaviour.CenterDistance,
-                Mathf.Sin(toRot) * m_currentBehaviour.CenterDistance, 0);
+                Mathf.Cos(toRot) * _attackInfo.CenterDistance,
+                Mathf.Sin(toRot) * _attackInfo.CenterDistance, 0);
 
-            toRot = 2 * Mathf.PI * i / m_currentBehaviour.Limbs - 2 * Mathf.PI / (2 * m_currentBehaviour.Limbs) + m_currentBehaviour.StartAngle * Mathf.Deg2Rad;
+            toRot = 2 * Mathf.PI * i / _attackInfo.Limbs - 2 * Mathf.PI / (2 * _attackInfo.Limbs) + _attackInfo.StartAngle * Mathf.Deg2Rad;
             RightEdgePos.Set(
-                Mathf.Cos(toRot) * m_currentBehaviour.InnerPointsDist,
-                Mathf.Sin(toRot) * m_currentBehaviour.InnerPointsDist, 0);
+                Mathf.Cos(toRot) * _attackInfo.InnerPointsDist,
+                Mathf.Sin(toRot) * _attackInfo.InnerPointsDist, 0);
 
-            toRot = 2 * Mathf.PI * i / m_currentBehaviour.Limbs + 2 * Mathf.PI / (2 * m_currentBehaviour.Limbs) + m_currentBehaviour.StartAngle * Mathf.Deg2Rad;
+            toRot = 2 * Mathf.PI * i / _attackInfo.Limbs + 2 * Mathf.PI / (2 * _attackInfo.Limbs) + _attackInfo.StartAngle * Mathf.Deg2Rad;
             LeftEdgePos.Set(
-                 Mathf.Cos(toRot) * m_currentBehaviour.InnerPointsDist,
-                 Mathf.Sin(toRot) * m_currentBehaviour.InnerPointsDist, 0);
+                 Mathf.Cos(toRot) * _attackInfo.InnerPointsDist,
+                 Mathf.Sin(toRot) * _attackInfo.InnerPointsDist, 0);
 
 
-            int firstCornerIndex = i * ((particleCount / m_currentBehaviour.Limbs));
+            int firstCornerIndex = i * ((particleCount / _attackInfo.Limbs));
             Particles[firstCornerIndex].position = EdgePos;
-            Particles[firstCornerIndex].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? EdgePos : MedianDir) / m_currentBehaviour.CenterDistance;
-            Particles[firstCornerIndex].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
-            Particles[firstCornerIndex].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-            Particles[firstCornerIndex].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
+            Particles[firstCornerIndex].velocity = _attackInfo.ProjectileParameters.InitialVelocityStrength * (_attackInfo.CircleCenteredVelocity ? EdgePos : MedianDir) / _attackInfo.CenterDistance;
+            Particles[firstCornerIndex].startSize3D = new Vector3(_attackInfo.ProjectileParameters.InitialScale.x, _attackInfo.ProjectileParameters.InitialScale.y, 1);
+            Particles[firstCornerIndex].startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+            Particles[firstCornerIndex].remainingLifetime = _attackInfo.ProjectileParameters.LifeTime;
             Particles[firstCornerIndex].startColor = UnityEngine.Color.white;
             Particles[firstCornerIndex].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(EdgePos.y, EdgePos.x));
 
-            for (int u = 1; u < m_currentBehaviour.ProjectileCount - 1; u++)
+            for (int u = 1; u < _attackInfo.ProjectileCount - 1; u++)
             {
-                x1 = Mathf.Lerp(LeftEdgePos.x, EdgePos.x, (float)u / (m_currentBehaviour.ProjectileCount - 1));
-                y1 = Mathf.Lerp(LeftEdgePos.y, EdgePos.y, (float)u / (m_currentBehaviour.ProjectileCount - 1));
+                x1 = Mathf.Lerp(LeftEdgePos.x, EdgePos.x, (float)u / (_attackInfo.ProjectileCount - 1));
+                y1 = Mathf.Lerp(LeftEdgePos.y, EdgePos.y, (float)u / (_attackInfo.ProjectileCount - 1));
 
                 int index = u + firstCornerIndex;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) / m_currentBehaviour.CenterDistance;
-                Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
-                Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-                Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
+                Particles[index].velocity = _attackInfo.ProjectileParameters.InitialVelocityStrength * (_attackInfo.CircleCenteredVelocity ? Particles[index].position : MedianDir) / _attackInfo.CenterDistance;
+                Particles[index].startSize3D = new Vector3(_attackInfo.ProjectileParameters.InitialScale.x, _attackInfo.ProjectileParameters.InitialScale.y, 1);
+                Particles[index].startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+                Particles[index].remainingLifetime = _attackInfo.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
                 Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
 
             }
-            for (int u = 0; u < m_currentBehaviour.ProjectileCount - 1; u++)
+            for (int u = 0; u < _attackInfo.ProjectileCount - 1; u++)
             {
-                x1 = Mathf.Lerp(RightEdgePos.x, EdgePos.x, (float)u / (m_currentBehaviour.ProjectileCount - 1));
-                y1 = Mathf.Lerp(RightEdgePos.y, EdgePos.y, (float)u / (m_currentBehaviour.ProjectileCount - 1));
+                x1 = Mathf.Lerp(RightEdgePos.x, EdgePos.x, (float)u / (_attackInfo.ProjectileCount - 1));
+                y1 = Mathf.Lerp(RightEdgePos.y, EdgePos.y, (float)u / (_attackInfo.ProjectileCount - 1));
 
-                int index = u + firstCornerIndex + m_currentBehaviour.ProjectileCount - 1;
+                int index = u + firstCornerIndex + _attackInfo.ProjectileCount - 1;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) / m_currentBehaviour.CenterDistance;
-                Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
-                Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-                Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
+                Particles[index].velocity = _attackInfo.ProjectileParameters.InitialVelocityStrength * (_attackInfo.CircleCenteredVelocity ? Particles[index].position : MedianDir) / _attackInfo.CenterDistance;
+                Particles[index].startSize3D = new Vector3(_attackInfo.ProjectileParameters.InitialScale.x, _attackInfo.ProjectileParameters.InitialScale.y, 1);
+                Particles[index].startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+                Particles[index].remainingLifetime = _attackInfo.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
                 Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
 
             }
-            int InnerCount = (int)(m_currentBehaviour.ProjectileCount / 1.2f) - 2;
+            int InnerCount = (int)(_attackInfo.ProjectileCount / 1.2f) - 2;
             for (int u = 0; u < InnerCount; u++)
             {
                 x1 = Mathf.Lerp(LeftEdgePos.x, RightEdgePos.x, ((float)(u + 1)) / (InnerCount + 1));
                 y1 = Mathf.Lerp(LeftEdgePos.y, RightEdgePos.y, ((float)(u + 1)) / (InnerCount + 1));
 
-                int index = u + firstCornerIndex + 2 * m_currentBehaviour.ProjectileCount - 2;
+                int index = u + firstCornerIndex + 2 * _attackInfo.ProjectileCount - 2;
                 Particles[index].position = new Vector3(x1, y1);
-                Particles[index].velocity = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength * (m_currentBehaviour.CircleCenteredVelocity ? Particles[index].position : MedianDir) / m_currentBehaviour.CenterDistance;
-                Particles[index].startSize3D = new Vector3(m_currentBehaviour.ProjectileParameters.InitialScale.x, m_currentBehaviour.ProjectileParameters.InitialScale.y, 1);
-                Particles[index].startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-                Particles[index].remainingLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
+                Particles[index].velocity = _attackInfo.ProjectileParameters.InitialVelocityStrength * (_attackInfo.CircleCenteredVelocity ? Particles[index].position : MedianDir) / _attackInfo.CenterDistance;
+                Particles[index].startSize3D = new Vector3(_attackInfo.ProjectileParameters.InitialScale.x, _attackInfo.ProjectileParameters.InitialScale.y, 1);
+                Particles[index].startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+                Particles[index].remainingLifetime = _attackInfo.ProjectileParameters.LifeTime;
                 Particles[index].startColor = UnityEngine.Color.white;
                 Particles[index].rotation3D = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan2(y1, x1));
 
@@ -406,15 +406,18 @@ public class EnemyFiringSystem : MonoBehaviour
         }
         return Particles;
     }
+    
     private IEnumerator EmissionRoutine(ParticleSystem system, EnemyProjectileSpawner.ShootZone _Zone, float stopTime = -1, Func<bool> condition = null, Particle[] _particles = null)
     {
         if (system.isStopped)
             system.Play();
-
         bool death = m_stopEmission;
         float timer = float.PositiveInfinity;
         float timeSinceCoroutineStart = 0;
         Particle[] _copy;
+
+        //Believe it or not, this huge code repetition makes it more optimised than if we were to put everything in a single While loop
+        //this is due to the fact that we would have to check each frame for a lot of conditions instead of a select few
         if (stopTime > 0)
         {
             while (timeSinceCoroutineStart < stopTime && (!m_stopEmission || death))
@@ -439,7 +442,7 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
-                if (_particles != null && timer > _Zone.SpawnFrequency && _Zone.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
+                if (_particles != null && timer > _Zone.SpawnFrequency)
                 {
                     timer = 0;
 
@@ -554,23 +557,23 @@ public class EnemyFiringSystem : MonoBehaviour
         else if(death || !ShootSettings.ProjectilePatterns.ContainsKey(EnemyProjectileSpawner.BehaviourChangeType.Death))
             Destroy(gameObject);
     }
-    private void SetupParticleSystemParameters(ParticleSystem system)
+    public static void SetupParticleSystemParameters(ParticleSystem system, EnemyProjectileSpawner.ShootZone _attackInfo)
     {
         //Render Module
         ParticleSystemRenderer particleSystemRenderer = system.GetComponent<ParticleSystemRenderer>();
-        particleSystemRenderer.material = m_currentBehaviour.ProjectileParameters.Mat;
+        particleSystemRenderer.material = _attackInfo.ProjectileParameters.Mat;
         particleSystemRenderer.renderMode = ParticleSystemRenderMode.Mesh;
         particleSystemRenderer.sortMode = ParticleSystemSortMode.None;
         particleSystemRenderer.alignment = ParticleSystemRenderSpace.World;
         //Main Module
         MainModule mainModule = system.main;
-        mainModule.startColor = m_currentBehaviour.ProjectileParameters.InitialColor;
+        mainModule.startColor = _attackInfo.ProjectileParameters.InitialColor;
         mainModule.startSize3D = true;
-        mainModule.startSizeX = m_currentBehaviour.ProjectileParameters.InitialScale.x;
-        mainModule.startSizeY = m_currentBehaviour.ProjectileParameters.InitialScale.y;
-        mainModule.startLifetime = m_currentBehaviour.ProjectileParameters.LifeTime;
-        mainModule.startSpeed = m_currentBehaviour.ProjectileParameters.InitialVelocityStrength;
-        mainModule.startColor = m_currentBehaviour.ProjectileParameters.InitialColor;
+        mainModule.startSizeX = _attackInfo.ProjectileParameters.InitialScale.x;
+        mainModule.startSizeY = _attackInfo.ProjectileParameters.InitialScale.y;
+        mainModule.startLifetime = _attackInfo.ProjectileParameters.LifeTime;
+        mainModule.startSpeed = _attackInfo.ProjectileParameters.InitialVelocityStrength;
+        mainModule.startColor = _attackInfo.ProjectileParameters.InitialColor;
         mainModule.startRotation3D = true;
         mainModule.loop = true;
         mainModule.playOnAwake = true;
@@ -578,7 +581,7 @@ public class EnemyFiringSystem : MonoBehaviour
         mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
 
         MinMaxCurve RotZ = mainModule.startRotationZ;
-        RotZ.constant = m_currentBehaviour.ProjectileParameters.InitialRotation * Mathf.Deg2Rad;
+        RotZ.constant = _attackInfo.ProjectileParameters.InitialRotation * Mathf.Deg2Rad;
         mainModule.startRotationZ = RotZ;
 
         //Emitter shape module
@@ -593,7 +596,7 @@ public class EnemyFiringSystem : MonoBehaviour
         TextureSheetAnimationModule SpriteModule = system.textureSheetAnimation;
         SpriteModule.enabled = true;
         SpriteModule.mode = ParticleSystemAnimationMode.Sprites;
-        SpriteModule.SetSprite(0, m_currentBehaviour.ProjectileParameters.Texture);
+        SpriteModule.SetSprite(0, _attackInfo.ProjectileParameters.Texture);
 
         //Collision module
         CollisionModule CollisionModule = system.collision;
@@ -606,10 +609,10 @@ public class EnemyFiringSystem : MonoBehaviour
 
         //ScaleOverLifetime
         SizeOverLifetimeModule ScaleModule = system.sizeOverLifetime;
-        if (m_currentBehaviour.ProjectileParameters.VariableScale)
+        if (_attackInfo.ProjectileParameters.VariableScale)
         {
             ScaleModule.enabled = true;
-            ScaleModule.size = m_currentBehaviour.ProjectileParameters.ScaleOverTime;
+            ScaleModule.size = _attackInfo.ProjectileParameters.ScaleOverTime;
         }
         else
         {
@@ -618,11 +621,11 @@ public class EnemyFiringSystem : MonoBehaviour
 
         //RotationOverLifetime
         RotationOverLifetimeModule RotationModule = system.rotationOverLifetime;
-        if (m_currentBehaviour.ProjectileParameters.VariableRotation)
+        if (_attackInfo.ProjectileParameters.VariableRotation)
         {
             RotationModule.enabled = true;
             RotationModule.separateAxes = true;
-            RotationModule.z = m_currentBehaviour.ProjectileParameters.RotationOverTime;
+            RotationModule.z = _attackInfo.ProjectileParameters.RotationOverTime;
         }
         else
         {
@@ -631,10 +634,10 @@ public class EnemyFiringSystem : MonoBehaviour
 
         //ColorOverLifetime
         ColorOverLifetimeModule ColorModule = system.colorOverLifetime;
-        if (m_currentBehaviour.ProjectileParameters.VariableColor)
+        if (_attackInfo.ProjectileParameters.VariableColor)
         {
             ColorModule.enabled = true;
-            ColorModule.color = m_currentBehaviour.ProjectileParameters.ColorOverTime;
+            ColorModule.color = _attackInfo.ProjectileParameters.ColorOverTime;
         }
         else
         {
@@ -643,11 +646,11 @@ public class EnemyFiringSystem : MonoBehaviour
 
         //VelocityOverLifetime
         VelocityOverLifetimeModule VelocityModule = system.velocityOverLifetime;
-        if (m_currentBehaviour.ProjectileParameters.VariableVelocity)
+        if (_attackInfo.ProjectileParameters.VariableVelocity)
         {
             VelocityModule.enabled = true;
             VelocityModule.space = ParticleSystemSimulationSpace.World;
-            VelocityModule.speedModifier = m_currentBehaviour.ProjectileParameters.VelocityOverTime;
+            VelocityModule.speedModifier = _attackInfo.ProjectileParameters.VelocityOverTime;
         }
         else
         {
@@ -655,17 +658,17 @@ public class EnemyFiringSystem : MonoBehaviour
         }
 
         //Bullet curve
-        if (m_currentBehaviour.ProjectileParameters.BulletCurve)
+        if (_attackInfo.ProjectileParameters.BulletCurve)
         {
             VelocityModule.enabled = true;
             VelocityModule.space = ParticleSystemSimulationSpace.World;
-            VelocityModule.orbitalZ = m_currentBehaviour.ProjectileParameters.TrajectoryOverTime;
+            VelocityModule.orbitalZ = _attackInfo.ProjectileParameters.TrajectoryOverTime;
         }
         else
         {
             VelocityModule.orbitalZ = new();
         }
-        if (!m_currentBehaviour.ProjectileParameters.BulletCurve && !m_currentBehaviour.ProjectileParameters.VariableVelocity)
+        if (!_attackInfo.ProjectileParameters.BulletCurve && !_attackInfo.ProjectileParameters.VariableVelocity)
         {
             VelocityModule.enabled = false;
         }

@@ -201,8 +201,8 @@ public static class PropertyDrawerExtensionMethods
         {
             if (element.Contains("["))
             {
-                string elementName = element.Substring(0, element.IndexOf("["));
-                int index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                string elementName = element[..element.IndexOf("[")];
+                int index = Convert.ToInt32(element[element.IndexOf("[")..].Replace("[", "").Replace("]", ""));
                 obj = GetValue_Imp(obj, elementName, index);
             }
             else
@@ -236,8 +236,7 @@ public static class PropertyDrawerExtensionMethods
 
     private static object GetValue_Imp(object source, string name, int index)
     {
-        System.Collections.IEnumerable enumerable = GetValue_Imp(source, name) as System.Collections.IEnumerable;
-        if (enumerable == null) return null;
+        if (GetValue_Imp(source, name) is not System.Collections.IEnumerable enumerable) return null;
         System.Collections.IEnumerator enm = enumerable.GetEnumerator();
         //while (index-- >= 0)
         //    enm.MoveNext();

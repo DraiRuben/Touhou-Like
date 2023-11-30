@@ -27,7 +27,10 @@ public class PlayerManager : MonoBehaviour
     public GameObject GetClosestPlayer(Vector3 _position)
     {
         if (m_players.Count > 0)
-            return m_players.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+        {
+            var AlivePlayers = m_players.Where(x => x.GetComponent<EntityHealthHandler>().Health > 0).ToList();
+            return AlivePlayers.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+        }
         else return null;
     }
 }
