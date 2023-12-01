@@ -17,14 +17,7 @@ MonoBehaviour:
     m_values:
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 0
-        ShowExitValue: 0
-        ShowInfiniteDuration: 1
-        OldZoneCount: 1
-        BehaviourType: 0
+      - BehaviourType: 0
         InfiniteDuration: 1
         BehaviourEnterValue: 21
         BehaviourExitValue: 15
@@ -155,18 +148,11 @@ MonoBehaviour:
               m_PostInfinity: 2
               m_RotationOrder: 4
             m_ConstantMin: 0
-            m_ConstantMax: 0
+            m_ConstantMax: 5
       AlreadyChosenIndexes: 
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 0
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 2
+      - BehaviourType: 2
         InfiniteDuration: 0
         BehaviourEnterValue: 15
         BehaviourExitValue: 1

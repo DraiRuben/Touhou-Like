@@ -8,12 +8,15 @@ public class EndScreen : MonoBehaviour
 {
     public static EndScreen Instance;
     [NonSerialized] public List<GameObject> Scores = new();
+
+    private Animator m_animator;
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
         gameObject.SetActive(false);
+        m_animator = GetComponent<Animator>();
     }
 
     public void DisplayScores()
@@ -32,12 +35,14 @@ public class EndScreen : MonoBehaviour
     public void Restart()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        m_animator.SetTrigger("ChangeState");
+        StartCoroutine(PauseScreen.LoadSceneDelayed(.4f, SceneManager.GetActiveScene().buildIndex));
     }
     public void MainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadSceneAsync(0);
+        m_animator.SetTrigger("ChangeState");
+        StartCoroutine(PauseScreen.LoadSceneDelayed(.4f, 0));
     }
 
 }

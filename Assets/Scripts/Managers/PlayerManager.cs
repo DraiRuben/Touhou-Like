@@ -29,8 +29,11 @@ public class PlayerManager : MonoBehaviour
         if (m_players.Count > 0)
         {
             var AlivePlayers = m_players.Where(x => x.GetComponent<EntityHealthHandler>().Health > 0).ToList();
-            return AlivePlayers.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+            if(AlivePlayers.Count > 0)
+            {
+                return AlivePlayers.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+            }
         }
-        else return null;
+        return null;
     }
 }

@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,11 +13,11 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private PathTransitionType m_transitionType;
     [Space]
     public bool IsStationnaryAfterNPaths;
-    [ShowCondition("IsStationnaryAfterNPaths")]
+    [ShowIf(nameof(IsStationnaryAfterNPaths))]
     [Min(1)]
     public int NPathsBeforeStationnary;
 
-    [ShowCondition("ShowLoopPathChoices")][SerializeField] private bool LoopPathChoices;
+    [ShowIf(nameof(ShowLoopPathChoices))][SerializeField] private bool LoopPathChoices;
     [SerializeField] private List<PathChoice> m_pathChoices;
 
     private int m_currentPathChoiceIndex;
@@ -46,13 +47,24 @@ public class EnemyMovement : MonoBehaviour
         m_healthHandler.Health--;
         if (IsBoss)
         {
-            other.transform.parent.GetComponent<PlayerInputReceiver>().Score += 10;
+            GetShootOrigin(other).Score += 10;
         }
         if (m_healthHandler.Health <= 0)
         {
-            other.transform.parent.GetComponent<PlayerInputReceiver>().Score += m_healthHandler.MaxHealth*113;
+            GetShootOrigin(other).Score += m_healthHandler.MaxHealth*113;
         }
-        HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Hit);
+        GFXManager.Instance.DisplayEffect(transform.position, GFXManager.EffectType.Hit);
+    }
+    private PlayerInputReceiver GetShootOrigin(GameObject other)
+    {
+        if(other.transform.parent != null)
+        {
+            return other.transform.parent.GetComponent<PlayerInputReceiver>();
+        }
+        else
+        {
+            return PlayerManager.Instance.m_players[(int)other.transform.localScale.z-1].GetComponent<PlayerInputReceiver>();
+        }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -60,7 +72,7 @@ public class EnemyMovement : MonoBehaviour
         {
             m_firingSystem.HasCollided = true;
             m_healthHandler.Health--;
-            HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Explosion);
+            GFXManager.Instance.DisplayEffect(transform.position, GFXManager.EffectType.Explosion);
         }
     }
     private IEnumerator Movement()
@@ -175,20 +187,20 @@ public class EnemyMovement : MonoBehaviour
     public class PathChoice
     {
         [Header("Path Choice Parameters")]
-        [ShowCondition("ShowLoopPath")] public bool LoopThroughPath;
-        [ShowCondition("LoopThroughPath")] public bool RegenPathWithLoop;
+        [ShowIf(nameof(ShowLoopPath))] public bool LoopThroughPath;
+        [ShowIf(nameof(LoopThroughPath))] public bool RegenPathWithLoop;
 
         public bool RandomMovementPath;
-        [HideCondition("RandomMovementPath")] public int PathIndex;
+        [HideIf(nameof(RandomMovementPath))] public int PathIndex;
 
         [Space]
         public bool RandomPathLength;
-        [HideCondition("RandomPathLength")] public EnemyWaypointManager.PathLengthConditionType PathLengthConditionType;
-        [HideCondition("RandomPathLength")] public int PathLength;
+        [HideIf(nameof(RandomPathLength))] public EnemyWaypointManager.PathLengthConditionType PathLengthConditionType;
+        [HideIf(nameof(RandomPathLength))] public int PathLength;
 
         [Space]
         public bool IsStationnaryAfterNWaypoints;
-        [ShowCondition("IsStationnaryAfterNWaypoints")]
+        [ShowIf(nameof(IsStationnaryAfterNWaypoints))]
         [Min(1)]
         public int NWaypointsBeforeStationnary;
 

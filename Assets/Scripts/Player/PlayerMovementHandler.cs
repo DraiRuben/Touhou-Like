@@ -37,7 +37,7 @@ public class PlayerMovementHandler : MonoBehaviour
     private void OnParticleCollision(GameObject other)
     {
         m_healthHandler.Health--;
-        HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Hit);
+        GFXManager.Instance.DisplayEffect(transform.position, GFXManager.EffectType.Hit);
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {

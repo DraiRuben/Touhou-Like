@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
@@ -23,23 +24,26 @@ public static class Projectile
         [Header("LifetimeParameters")]
 
         public bool VariableVelocity;
+        [ShowIf(nameof(VariableVelocity))]
         public ParticleSystem.MinMaxCurve VelocityOverTime;
-
         [Space]
-
         public bool VariableScale;
+        [ShowIf(nameof(VariableScale))]
         public ParticleSystem.MinMaxCurve ScaleOverTime;
 
         [Space]
         public bool VariableColor;
-        [ShowCondition("VariableColor")]
+        [ShowIf(nameof(VariableColor))]
         public Gradient ColorOverTime;
+
         [Space]
         public bool VariableRotation;
+        [ShowIf(nameof (VariableRotation))]
         public ParticleSystem.MinMaxCurve RotationOverTime;
 
         [Space]
         public bool BulletCurve;
+        [ShowIf(nameof (BulletCurve))]
         public ParticleSystem.MinMaxCurve TrajectoryOverTime;
     }
 }

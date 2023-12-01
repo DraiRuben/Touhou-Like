@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,71 +10,66 @@ public class EnemyProjectileSpawner : ScriptableObject
     [Serializable]
     public class ShootZone
     {
-#if UNITY_EDITOR
-        [HideInInspector] public bool IsCircle;
-        [HideInInspector] public bool IsPolygon;
-        [HideInInspector] public bool IsStar;
-        [HideInInspector] public bool ShowEnterValue;
-        [HideInInspector] public bool ShowExitValue;
-        [HideInInspector] public bool ShowInfiniteDuration;
-        [HideInInspector] public int OldZoneCount = 1;
-#endif
         [Header("Transition")]
         public BehaviourChangeType BehaviourType;
-        [ShowCondition("ShowInfiniteDuration")]
+
+        [ShowIf(nameof(BehaviourType), BehaviourChangeType.Time)]
         public bool InfiniteDuration;
-        [ShowCondition("ShowEnterValue")]
-        [Tooltip("ALWAYS remember to order the Shoot Zones by behaviour enter time from the biggest to the smallest for Life behaviour types")]
+        [ShowIf(nameof(BehaviourType), BehaviourChangeType.Life)]
         public float BehaviourEnterValue;
-        [ShowCondition("ShowExitValue")]
+        [ShowIf("@this.BehaviourType != BehaviourChangeType.Time || this.BehaviourType == BehaviourChangeType.Time && !this.InfiniteDuration")]
         public float BehaviourExitValue;
 
         [Header("Pattern")]
         public PatternType patternType;
         public bool CircleCenteredVelocity;
-        [Min(.001f)]
+        [MinValue(.001f)]
         public float CenterDistance = 1;
         [Space]
-        [Range(-180, 180f)]
+        [MaxValue(nameof(EndAngle))]
+        [PropertyRange(-180f, nameof(EndAngle))]
         public float StartAngle;
 
-        [ShowCondition("IsCircle")]
-        [Range(-180, 180f)]
+        [ShowIf(nameof(patternType), PatternType.Circle)]
+        [MinValue(nameof(StartAngle))]
+        [PropertyRange(nameof(StartAngle),180f)]
         public float EndAngle;
-        [ShowCondition("IsCircle")]
-        [Min(1)]
+        [ShowIf(nameof(patternType), PatternType.Circle)]
+        [MaxValue("@360f/Mathf.Abs(this.EndAngle - this.StartAngle)")]
+        [MinValue(1)]
         public int ZoneCount = 1;
-        [ShowCondition("IsCircle")]
+        [ShowIf(nameof(patternType), PatternType.Circle)]
         public bool RandomPosition;
-        [ShowCondition("IsPolygon")]
-        [Min(3)]
+
+        [ShowIf(nameof(patternType), PatternType.Polygon)]
+        [MinValue(3)]
         public int Vertices = 3;
 
-        [ShowCondition("IsStar")]
-        [Min(3)]
+        [ShowIf(nameof(patternType), PatternType.Star)]
+        [MinValue(3)]
         public int Limbs = 3;
 
-        [ShowCondition("IsStar")]
-        [Min(.1f)]
+        [ShowIf(nameof(patternType), PatternType.Star)]
+        [MinValue(.1f)]
         public float InnerPointsDist = 1.45f;
 
         [Space]
-        [HideCondition("AimAtClosestPlayer")]
+        [HideIf(nameof(AimAtClosestPlayer))]
         public bool Spin;
-        [ShowCondition("Spin")]
+        [ShowIf(nameof(Spin))]
         public float SpinSpeed;
         public bool RotationFollowsAim;
 
         [Space]
-        [HideCondition("Spin")]
+        [HideIf(nameof(Spin))]
         public bool AimAtClosestPlayer;
-        [HideCondition("AimAtClosestPlayer")]
+        [HideIf(nameof(AimAtClosestPlayer))]
         [Range(-180, 180f)]
         public float ShootRotation;
 
         [Tooltip("This is the number of projectiles in an arc for a circle zone,\nOr the number of projectiles per vertice of a polygon or Star")]
         public int ProjectileCount;
-        [Min(.001f)]
+        [MinValue(.001f)]
         public float SpawnFrequency;
 
         [Space]
@@ -93,25 +89,7 @@ public class EnemyProjectileSpawner : ScriptableObject
         {
             foreach (ShootZone zone in behaviour.Value.ShootZones)
             {
-                zone.IsCircle = zone.patternType == ShootZone.PatternType.Circle;
-                zone.IsPolygon = zone.patternType == ShootZone.PatternType.Polygon;
-                zone.IsStar = zone.patternType == ShootZone.PatternType.Star;
                 zone.BehaviourType = behaviour.Key;
-                zone.ShowInfiniteDuration = zone.BehaviourType == BehaviourChangeType.Time;
-                zone.ShowExitValue = zone.BehaviourType == BehaviourChangeType.Time && !zone.InfiniteDuration || zone.BehaviourType != BehaviourChangeType.Time;
-                zone.ShowEnterValue = zone.BehaviourType == BehaviourChangeType.Life;
-                if (Mathf.Abs(zone.EndAngle - zone.StartAngle) * zone.ZoneCount > 360)
-                {
-                    zone.ZoneCount = zone.OldZoneCount;
-                }
-                else
-                {
-                    zone.OldZoneCount = zone.ZoneCount;
-                }
-                if (zone.StartAngle > zone.EndAngle)
-                {
-                    (zone.StartAngle, zone.EndAngle) = (zone.EndAngle, zone.StartAngle);
-                }
             }
         }
     }

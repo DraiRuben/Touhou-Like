@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -9,11 +10,11 @@ public class EntityHealthHandler : MonoBehaviour
     public static int AlivePlayers;
 
     public bool IsPlayer;
-    [ShowCondition("IsPlayer")][SerializeField] private PlayerFiringSystem m_playerWeapon;
-    [ShowCondition("IsPlayer")][SerializeField] private PlayerMovementHandler m_playerMovement;
-    [ShowCondition("IsPlayer")][SerializeField] private PlayerAbility m_playerAbility;
-    [ShowCondition("IsPlayer")][SerializeField] private BoxCollider2D m_playerCollider;
-    [ShowCondition("IsPlayer")][SerializeField] private SpriteRenderer m_playerSprite;
+    [ShowIf(nameof(IsPlayer))][SerializeField] private PlayerFiringSystem m_playerWeapon;
+    [ShowIf(nameof(IsPlayer))][SerializeField] private PlayerMovementHandler m_playerMovement;
+    [ShowIf(nameof(IsPlayer))][SerializeField] private PlayerAbility m_playerAbility;
+    [ShowIf(nameof(IsPlayer))][SerializeField] private BoxCollider2D m_playerCollider;
+    [ShowIf(nameof(IsPlayer))][SerializeField] private SpriteRenderer m_playerSprite;
 
     [SerializeField] private GameObject m_toMakeInvincible;
     [SerializeField][Min(1)] private int m_maxHealth = 1;

@@ -23,9 +23,12 @@ public class PlayerInputReceiver : MonoBehaviour
     public float AbilityCooldown;
     [NonSerialized] public UnityEvent OnAbilityUse = new();
 
+    [NonSerialized] public int PlayerIndex;
+
     private void Awake()
     {
         m_movementHandler = GetComponent<PlayerMovementHandler>();
+        PlayerIndex = PlayerManager.Instance.m_players.Count;
     }
     public void MovementInput(InputAction.CallbackContext ctx)
     {
@@ -52,7 +55,7 @@ public class PlayerInputReceiver : MonoBehaviour
         {
             CanUseShield = false;
             OnShieldUse.Invoke();
-            HitNShieldNExplosionEffectManager.Instance.DisplayEffect(transform.position, HitNShieldNExplosionEffectManager.EffectType.Shield);
+            GFXManager.Instance.DisplayEffect(transform.position, GFXManager.EffectType.Shield);
             StartCoroutine(RefreshShield());
         }
     }
@@ -65,7 +68,7 @@ public class PlayerInputReceiver : MonoBehaviour
     {
         if (ctx.performed)
         {
-
+            PauseScreen.Instance.Pause();
         }
     }
 }

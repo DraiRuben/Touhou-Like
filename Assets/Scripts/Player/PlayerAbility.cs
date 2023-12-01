@@ -43,7 +43,8 @@ public class PlayerAbility : MonoBehaviour
                         ParticleSystem system = _toUse[i];
                         system.transform.rotation = Quaternion.Euler(0, 0, 360f - 360f / (i + 1));
                         EnemyFiringSystem.SetupParticleSystemParameters(system, Pattern);
-
+                        system.transform.localScale = new(system.transform.localScale.x, system.transform.localScale.y,m_inputHandler.PlayerIndex);
+                        
                         //Shape Module
                         ShapeModule ShapeModule = system.shape;
                         ShapeModule.enabled = true;
@@ -83,6 +84,7 @@ public class PlayerAbility : MonoBehaviour
             case ShootZone.PatternType.Polygon:
                 {
                     ParticleSystem system = ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>();
+                    system.transform.localScale = new(system.transform.localScale.x, system.transform.localScale.y, m_inputHandler.PlayerIndex);
 
                     EnemyFiringSystem.SetupParticleSystemParameters(system, Pattern);
                     Particle[] Particles = EnemyFiringSystem.ComputePolygon(Pattern);
@@ -105,8 +107,9 @@ public class PlayerAbility : MonoBehaviour
             case ShootZone.PatternType.Star:
                 {
                     ParticleSystem system = ProjectilePool.Instance.GetEmitter().GetComponent<ParticleSystem>();
+                    system.transform.localScale = new(system.transform.localScale.x, system.transform.localScale.y, m_inputHandler.PlayerIndex);
+                    
                     EnemyFiringSystem.SetupParticleSystemParameters(system, Pattern);
-
                     Particle[] Particles = EnemyFiringSystem.ComputeStar(Pattern);
 
                     ShapeModule ShapeModule = system.shape;
@@ -129,20 +132,6 @@ public class PlayerAbility : MonoBehaviour
     private void OnValidate()
     {
 
-        Pattern.IsCircle = Pattern.patternType == ShootZone.PatternType.Circle;
-        Pattern.IsPolygon = Pattern.patternType == ShootZone.PatternType.Polygon;
-        Pattern.IsStar = Pattern.patternType == ShootZone.PatternType.Star;
-        Pattern.ShowInfiniteDuration = Pattern.BehaviourType == BehaviourChangeType.Time;
-        Pattern.ShowExitValue = Pattern.BehaviourType == BehaviourChangeType.Time && !Pattern.InfiniteDuration || Pattern.BehaviourType != BehaviourChangeType.Time;
-        Pattern.ShowEnterValue = Pattern.BehaviourType == BehaviourChangeType.Life;
-        if (Mathf.Abs(Pattern.EndAngle - Pattern.StartAngle) * Pattern.ZoneCount > 360)
-        {
-            Pattern.ZoneCount = Pattern.OldZoneCount;
-        }
-        else
-        {
-            Pattern.OldZoneCount = Pattern.ZoneCount;
-        }
         if (Pattern.StartAngle > Pattern.EndAngle)
         {
             (Pattern.StartAngle, Pattern.EndAngle) = (Pattern.EndAngle, Pattern.StartAngle);

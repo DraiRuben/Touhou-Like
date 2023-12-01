@@ -46,10 +46,13 @@ public class EnemySpawnManager : MonoBehaviour
         if (m_enemies.Count > 0)
         {
             m_enemies = m_enemies.Where(x => x != null).ToList();
-            var AliveEnemies = m_enemies.Where(x =>x.GetComponent<EntityHealthHandler>().Health > 0).ToList();
-            return AliveEnemies.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+            if (m_enemies.Count > 0)
+            {
+                var AliveEnemies = m_enemies.Where(x => x.GetComponent<EntityHealthHandler>().Health > 0).ToList();
+                return AliveEnemies.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+            }
         }
-        else return null;
+        return null;
     }
     private void Update()
     {
