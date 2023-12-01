@@ -54,13 +54,14 @@ public class EnemySpawner : MonoBehaviour
             }
             else
             {
-                EnemySpawnManager.Instance.m_enemies.Add(Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity));
                 if (!KeepChoosenEnemyForEntireWave)
                 {
                     CachedIndex++;
                     if(CachedIndex>=Spawnable.Count)
                         CachedIndex = 0;
                 }
+                EnemySpawnManager.Instance.m_enemies.Add(Instantiate(Spawnable[CachedIndex], new Vector3(x, y), Quaternion.identity));
+                
             }
             Spawned++;
             yield return new WaitForSeconds(Duration / Amount);

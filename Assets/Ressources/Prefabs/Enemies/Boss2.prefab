@@ -400,7 +400,7 @@ MonoBehaviour:
   m_playerCollider: {fileID: 0}
   m_playerSprite: {fileID: 0}
   m_toMakeInvincible: {fileID: 0}
-  m_maxHealth: 3
+  m_maxHealth: 120
   m_deathAudio: {fileID: 1680898121800155793}
 --- !u!114 &566874016809030315
 MonoBehaviour:
@@ -433,13 +433,13 @@ MonoBehaviour:
   TriggerNextMovementBehaviour: 0
   m_transitionType: 1
   IsStationnaryAfterNPaths: 1
-  NPathsBeforeStationnary: 3
+  NPathsBeforeStationnary: 1
   LoopPathChoices: 1
   m_pathChoices:
   - LoopThroughPath: 0
     RegenPathWithLoop: 1
-    RandomMovementPath: 1
-    PathIndex: 0
+    RandomMovementPath: 0
+    PathIndex: 2
     RandomPathLength: 1
     PathLengthConditionType: 0
     PathLength: 0

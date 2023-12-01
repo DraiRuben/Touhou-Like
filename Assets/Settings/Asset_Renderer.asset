@@ -28,7 +28,7 @@ MonoBehaviour:
     blendMode: 1
   - name: Additive
     maskTextureChannel: 0
-    blendMode: 0
+    blendMode: 1
   - name: Multiply with Mask
     maskTextureChannel: 1
     blendMode: 1

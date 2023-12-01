@@ -696,6 +696,19 @@ public class EnemyFiringSystem : MonoBehaviour
             VelocityModule.enabled = true;
             VelocityModule.space = ParticleSystemSimulationSpace.World;
             VelocityModule.orbitalZ = _attackInfo.ProjectileParameters.TrajectoryOverTime;
+
+            var OX = VelocityModule.orbitalX;
+            OX.mode = VelocityModule.orbitalZ.mode;
+            OX.curveMultiplier = 0;
+            OX.constant = 0;
+            VelocityModule.orbitalX = OX;
+
+            var OY = VelocityModule.orbitalY;
+            OY.mode = VelocityModule.orbitalZ.mode;
+            OY.curveMultiplier = 0;
+            OY.constant = 0;
+            VelocityModule.orbitalY = OY;
+
         }
         else
         {

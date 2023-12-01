@@ -211,9 +211,9 @@ public class EnemyMovement : MonoBehaviour
 
         public ParticleSystem.MinMaxCurve MovemementMultiplier;
 
-#if UNITY_EDITOR
+
         [HideInInspector] public bool ShowLoopPath;
-#endif
+
     }
 
     public enum PathTransitionType
@@ -222,8 +222,9 @@ public class EnemyMovement : MonoBehaviour
         Triggered
     }
 
-#if UNITY_EDITOR
     [HideInInspector] public bool ShowLoopPathChoices;
+
+#if UNITY_EDITOR
     private void OnValidate()
     {
         ShowLoopPathChoices = m_transitionType == PathTransitionType.Automatic;
