@@ -17,14 +17,7 @@ MonoBehaviour:
     m_values:
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 0
-        ShowExitValue: 0
-        ShowInfiniteDuration: 1
-        OldZoneCount: 1
-        BehaviourType: 0
+      - BehaviourType: 0
         InfiniteDuration: 1
         BehaviourEnterValue: 21
         BehaviourExitValue: 15
@@ -39,12 +32,12 @@ MonoBehaviour:
         Limbs: 0
         InnerPointsDist: 0
         Spin: 1
-        SpinSpeed: 50
+        SpinSpeed: 30
         RotationFollowsAim: 1
         AimAtClosestPlayer: 0
         ShootRotation: 0
         ProjectileCount: 4
-        SpawnFrequency: 0.35
+        SpawnFrequency: 1
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: 0b1334cfbf5c9ff4cadfd430d04c48da, type: 3}
           Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
@@ -159,14 +152,7 @@ MonoBehaviour:
       AlreadyChosenIndexes: 
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 0
-        IsPolygon: 0
-        IsStar: 1
-        ShowEnterValue: 0
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 2
+      - BehaviourType: 2
         InfiniteDuration: 0
         BehaviourEnterValue: 15
         BehaviourExitValue: 1

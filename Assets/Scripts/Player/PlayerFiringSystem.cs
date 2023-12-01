@@ -15,9 +15,15 @@ public class PlayerFiringSystem : MonoBehaviour
     //TODO: make this crap work
     public bool ExplodeOnImpact;
     public float ExplosionRadius;
+
+    [SerializeField] private AudioSource m_audioPlayer;
     private void Awake()
     {
         UpdateFireParameters();
+    }
+    private void Start()
+    {
+        StartCoroutine(PlayAudio());
     }
     private void Update()
     {
@@ -35,6 +41,16 @@ public class PlayerFiringSystem : MonoBehaviour
     {
         if(m_firingSystem.isStopped)
             m_firingSystem.Play();
+    }
+    private IEnumerator PlayAudio()
+    {
+        while (true)
+        {
+            m_audioPlayer.PlayOneShot(m_audioPlayer.clip);
+            yield return new WaitForSeconds(1f / FireRate);
+            if (!enabled)
+                yield return new WaitUntil(() => enabled);
+        }
     }
     public void UpdateFireParameters()
     {

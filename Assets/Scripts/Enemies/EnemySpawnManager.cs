@@ -20,6 +20,7 @@ public class EnemySpawnManager : MonoBehaviour
 
     [NonSerialized] public List<GameObject> m_enemies = new();
 
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -49,7 +50,8 @@ public class EnemySpawnManager : MonoBehaviour
             if (m_enemies.Count > 0)
             {
                 var AliveEnemies = m_enemies.Where(x => x.GetComponent<EntityHealthHandler>().Health > 0).ToList();
-                return AliveEnemies.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
+                if(AliveEnemies.Count > 0)
+                    return AliveEnemies.OrderBy(player => Vector3.Distance(player.transform.position, _position)).ToList()[0];
             }
         }
         return null;
@@ -72,6 +74,7 @@ public class EnemySpawnManager : MonoBehaviour
             else
             {
                 m_bossSpawner.SpawnEnemy(1, 1);
+                BossHealthBar.Instance.StartDisplay();
             }
         }
     }

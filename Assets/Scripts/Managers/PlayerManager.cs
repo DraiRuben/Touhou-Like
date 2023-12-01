@@ -23,6 +23,7 @@ public class PlayerManager : MonoBehaviour
         _input.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = m_playerSprites[m_players.Count - 1];
         Instantiate(UIPrefab, UICanvas);
         EntityHealthHandler.AlivePlayers++;
+        Debug.Log("PlayerJoined");
     }
     public GameObject GetClosestPlayer(Vector3 _position)
     {

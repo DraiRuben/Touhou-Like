@@ -143,7 +143,7 @@ public class PlayerAbility : MonoBehaviour
     {
         if (system.isStopped)
             system.Play();
-        float timer = float.PositiveInfinity;
+        float timer = 1000;
         float timeSinceCoroutineStart = 0;
         Particle[] _copy;
         if (stopTime > 0)
@@ -161,7 +161,13 @@ public class PlayerAbility : MonoBehaviour
                     GameObject _closestEnemy = EnemySpawnManager.Instance.GetClosestEnemy(transform.position);
                     if (_closestEnemy != null)
                     {
-                        float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestEnemy.transform.position.y - transform.position.y, _closestEnemy.transform.position.x - transform.position.x);
+                        float x = _closestEnemy.transform.position.x - transform.position.x;
+                        float y = _closestEnemy.transform.position.y - transform.position.y;
+                        float angle = 0;
+                        if (x != 0 && y != 0 && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
+                        {
+                            angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
+                        }
                         system.transform.rotation = Quaternion.Euler(0, 0, angle);
                     }
                 }

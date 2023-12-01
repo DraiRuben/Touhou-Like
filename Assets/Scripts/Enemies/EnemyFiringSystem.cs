@@ -22,6 +22,8 @@ public class EnemyFiringSystem : MonoBehaviour
     private EnemyProjectileSpawner.ShootZone m_currentBehaviour;
     private Transform m_transform;
     private EnemyMovement m_movementHandler;
+
+    [SerializeField] private AudioSource m_audioPlayer;
     private void Awake()
     {
         m_healthComp = GetComponent<EntityHealthHandler>();
@@ -412,7 +414,7 @@ public class EnemyFiringSystem : MonoBehaviour
         if (system.isStopped)
             system.Play();
         bool death = m_stopEmission;
-        float timer = float.PositiveInfinity;
+        float timer = 1000;
         float timeSinceCoroutineStart = 0;
         Particle[] _copy;
 
@@ -432,7 +434,13 @@ public class EnemyFiringSystem : MonoBehaviour
                     GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
                     if (_closestPlayer != null)
                     {
-                        float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
+                        float x = _closestPlayer.transform.position.x - transform.position.x;
+                        float y = _closestPlayer.transform.position.y - transform.position.y;
+                        float angle =0;
+                        if (x !=0 && y != 0 && x!=float.NaN && y!=float.NaN) //checking for NaN since for some fucking reason it can happen
+                        {
+                            angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
+                        }
                         system.transform.rotation = Quaternion.Euler(0, 0, angle);
                     }
                 }
@@ -442,22 +450,26 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
-                if (_particles != null && timer > _Zone.SpawnFrequency)
+                if (timer > _Zone.SpawnFrequency)
                 {
                     timer = 0;
-
-                    _copy = _particles.ToArray();
-                    for (int i = 0; i < _copy.Length; i++)
+                    m_audioPlayer.PlayOneShot(m_audioPlayer.clip);
+                    if (_particles != null && _Zone.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
                     {
-                        Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
-                        _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
-                        _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
-                        newPos += system.transform.position;
-                        _copy[i].position = new(newPos.x, newPos.y, 0);
 
+                        _copy = _particles.ToArray();
+                        for (int i = 0; i < _copy.Length; i++)
+                        {
+                            Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
+                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
+                            _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                            newPos += system.transform.position;
+                            _copy[i].position = new(newPos.x, newPos.y, 0);
+
+                        }
+                        system.SetParticles(_copy, _copy.Length, system.particleCount);
+                        if (system.isStopped) system.Play();
                     }
-                    system.SetParticles(_copy, _copy.Length, system.particleCount);
-                    if (system.isStopped) system.Play();
                 }
                 yield return new WaitForFixedUpdate();
             }
@@ -476,7 +488,13 @@ public class EnemyFiringSystem : MonoBehaviour
                     GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
                     if (_closestPlayer != null)
                     {
-                        float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
+                        float x = _closestPlayer.transform.position.x - transform.position.x;
+                        float y = _closestPlayer.transform.position.y - transform.position.y;
+                        float angle = 0;
+                        if (x != 0 && y != 0 && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
+                        {
+                            angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
+                        }
                         system.transform.rotation = Quaternion.Euler(0, 0, angle);
 
                     }
@@ -486,23 +504,28 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
-                if (_particles != null && timer > _Zone.SpawnFrequency && _Zone.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
+                if(timer > _Zone.SpawnFrequency)
                 {
                     timer = 0;
-
-                    _copy = _particles.ToArray();
-                    for (int i = 0; i < _copy.Length; i++)
+                    m_audioPlayer.PlayOneShot(m_audioPlayer.clip);
+                    if (_particles != null && _Zone.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
                     {
-                        Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
-                        _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
-                        _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
-                        newPos += system.transform.position;
-                        _copy[i].position = new(newPos.x, newPos.y, 0);
 
+                        _copy = _particles.ToArray();
+                        for (int i = 0; i < _copy.Length; i++)
+                        {
+                            Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
+                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
+                            _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                            newPos += system.transform.position;
+                            _copy[i].position = new(newPos.x, newPos.y, 0);
+
+                        }
+                        system.SetParticles(_copy, _copy.Length, system.particleCount);
+                        if (system.isStopped) system.Play();
                     }
-                    system.SetParticles(_copy, _copy.Length, system.particleCount);
-                    if (system.isStopped) system.Play();
                 }
+                
                 yield return new WaitForFixedUpdate();
             }
         }
@@ -520,7 +543,13 @@ public class EnemyFiringSystem : MonoBehaviour
                     GameObject _closestPlayer = PlayerManager.Instance.GetClosestPlayer(transform.position);
                     if (_closestPlayer != null)
                     {
-                        float angle = Mathf.Rad2Deg * Mathf.Atan2(_closestPlayer.transform.position.y - transform.position.y, _closestPlayer.transform.position.x - transform.position.x);
+                        float x = _closestPlayer.transform.position.x - transform.position.x;
+                        float y = _closestPlayer.transform.position.y - transform.position.y;
+                        float angle = 0;
+                        if (x != 0 && y != 0 && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
+                        {
+                            angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
+                        }
                         system.transform.rotation = Quaternion.Euler(0, 0, angle);
 
                     }
@@ -530,22 +559,26 @@ public class EnemyFiringSystem : MonoBehaviour
 
                 timer += Time.deltaTime;
                 timeSinceCoroutineStart += Time.deltaTime;
-                if (_particles != null && timer > _Zone.SpawnFrequency && _Zone.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
+                if (timer > _Zone.SpawnFrequency)
                 {
                     timer = 0;
-
-                    _copy = _particles.ToArray();
-                    for (int i = 0; i < _copy.Length; i++)
+                    m_audioPlayer.PlayOneShot(m_audioPlayer.clip);
+                    if (_particles != null && _Zone.patternType != EnemyProjectileSpawner.ShootZone.PatternType.Circle)
                     {
-                        Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
-                        _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
-                        _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
-                        newPos += system.transform.position;
-                        _copy[i].position = new(newPos.x, newPos.y, 0);
 
+                        _copy = _particles.ToArray();
+                        for (int i = 0; i < _copy.Length; i++)
+                        {
+                            Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
+                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
+                            _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
+                            newPos += system.transform.position;
+                            _copy[i].position = new(newPos.x, newPos.y, 0);
+
+                        }
+                        system.SetParticles(_copy, _copy.Length, system.particleCount);
+                        if (system.isStopped) system.Play();
                     }
-                    system.SetParticles(_copy, _copy.Length, system.particleCount);
-                    if (system.isStopped) system.Play();
                 }
                 yield return new WaitForFixedUpdate();
             }

@@ -19,11 +19,13 @@ public class EnemyMovement : MonoBehaviour
 
     [ShowIf(nameof(ShowLoopPathChoices))][SerializeField] private bool LoopPathChoices;
     [SerializeField] private List<PathChoice> m_pathChoices;
+    [SerializeField] private AudioSource m_audioPlayer;
 
     private int m_currentPathChoiceIndex;
     private Rigidbody2D m_rb;
     private EntityHealthHandler m_healthHandler;
     private EnemyFiringSystem m_firingSystem;
+
     private void Awake()
     {
         m_rb = GetComponent<Rigidbody2D>();
@@ -45,6 +47,7 @@ public class EnemyMovement : MonoBehaviour
     private void OnParticleCollision(GameObject other)
     {
         m_healthHandler.Health--;
+        m_audioPlayer.PlayOneShot(m_audioPlayer.clip);
         if (IsBoss)
         {
             GetShootOrigin(other).Score += 10;
@@ -71,6 +74,7 @@ public class EnemyMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             m_firingSystem.HasCollided = true;
+            m_audioPlayer.PlayOneShot(m_audioPlayer.clip);
             m_healthHandler.Health--;
             GFXManager.Instance.DisplayEffect(transform.position, GFXManager.EffectType.Explosion);
         }

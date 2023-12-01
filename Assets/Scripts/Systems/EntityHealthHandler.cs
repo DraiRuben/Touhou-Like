@@ -18,7 +18,7 @@ public class EntityHealthHandler : MonoBehaviour
 
     [SerializeField] private GameObject m_toMakeInvincible;
     [SerializeField][Min(1)] private int m_maxHealth = 1;
-
+    [SerializeField] private AudioSource m_deathAudio;
 
     private int m_deathCount;
     private int m_health;
@@ -56,6 +56,7 @@ public class EntityHealthHandler : MonoBehaviour
                 {
                     if (IsPlayer) m_deathCount++;
                     OnDeath.Invoke();
+                    m_deathAudio.PlayOneShot(m_deathAudio.clip);
                 }
             }
         }
@@ -83,6 +84,7 @@ public class EntityHealthHandler : MonoBehaviour
     private IEnumerator PlayerDeath()
     {
         AlivePlayers--;
+        Debug.Log("PlayerDead, remaining:" + AlivePlayers);
         m_playerMovement.enabled = false;
         m_playerCollider.enabled = false;
         m_playerSprite.enabled = false;
@@ -104,7 +106,8 @@ public class EntityHealthHandler : MonoBehaviour
             m_playerAbility.enabled = true;
             Health = m_maxHealth;
             AlivePlayers++;
+            Debug.Log("PlayerRevived, remaining:" + AlivePlayers);
         }
-        
+
     }
 }
