@@ -17,14 +17,7 @@ MonoBehaviour:
     m_values:
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 0
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 2
+      - BehaviourType: 2
         InfiniteDuration: 0
         BehaviourEnterValue: 15
         BehaviourExitValue: 1
@@ -40,6 +33,7 @@ MonoBehaviour:
         InnerPointsDist: 0.4
         Spin: 0
         SpinSpeed: 0
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 0
         ShootRotation: 0
         ProjectileCount: 5
@@ -158,14 +152,7 @@ MonoBehaviour:
       AlreadyChosenIndexes: 
     - ChoiceMethod: 0
       ShootZones:
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 1
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 3
+      - BehaviourType: 3
         InfiniteDuration: 0
         BehaviourEnterValue: 51
         BehaviourExitValue: 34
@@ -181,6 +168,7 @@ MonoBehaviour:
         InnerPointsDist: 0.4
         Spin: 1
         SpinSpeed: 20
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 0
         ShootRotation: 0
         ProjectileCount: 5
@@ -314,14 +302,7 @@ MonoBehaviour:
               m_RotationOrder: 4
             m_ConstantMin: 0
             m_ConstantMax: 5
-      - IsCircle: 0
-        IsPolygon: 0
-        IsStar: 1
-        ShowEnterValue: 1
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 3
+      - BehaviourType: 3
         InfiniteDuration: 0
         BehaviourEnterValue: 51
         BehaviourExitValue: 34
@@ -337,6 +318,7 @@ MonoBehaviour:
         InnerPointsDist: 0.1
         Spin: 0
         SpinSpeed: 0
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 0
         ShootRotation: 0
         ProjectileCount: 5
@@ -345,7 +327,7 @@ MonoBehaviour:
           Texture: {fileID: 21300000, guid: 47aa97b96c535884cb6033014cb4e331, type: 3}
           Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
           LifeTime: 20
-          InitialVelocityStrength: 20
+          InitialVelocityStrength: 5
           InitialRotation: 90
           InitialColor: {r: 1, g: 1, b: 1, a: 1}
           InitialScale: {x: 0.4, y: 0.4, z: 0.5}
@@ -452,14 +434,7 @@ MonoBehaviour:
               m_RotationOrder: 4
             m_ConstantMin: 0
             m_ConstantMax: 5
-      - IsCircle: 0
-        IsPolygon: 1
-        IsStar: 0
-        ShowEnterValue: 1
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 3
+      - BehaviourType: 3
         InfiniteDuration: 0
         BehaviourEnterValue: 34
         BehaviourExitValue: 18
@@ -475,6 +450,7 @@ MonoBehaviour:
         InnerPointsDist: 0.4
         Spin: 0
         SpinSpeed: 0
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 1
         ShootRotation: 0
         ProjectileCount: 4
@@ -626,14 +602,7 @@ MonoBehaviour:
               m_RotationOrder: 4
             m_ConstantMin: 0
             m_ConstantMax: 5
-      - IsCircle: 0
-        IsPolygon: 1
-        IsStar: 0
-        ShowEnterValue: 1
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 3
+      - BehaviourType: 3
         InfiniteDuration: 0
         BehaviourEnterValue: 34
         BehaviourExitValue: 18
@@ -649,6 +618,7 @@ MonoBehaviour:
         InnerPointsDist: 0.4
         Spin: 0
         SpinSpeed: 0
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 1
         ShootRotation: 0
         ProjectileCount: 4
@@ -657,7 +627,7 @@ MonoBehaviour:
           Texture: {fileID: 21300000, guid: 47aa97b96c535884cb6033014cb4e331, type: 3}
           Mat: {fileID: 2100000, guid: 74ca928a3781a834aadd86766051b322, type: 2}
           LifeTime: 20
-          InitialVelocityStrength: 30
+          InitialVelocityStrength: 5
           InitialRotation: 90
           InitialColor: {r: 1, g: 1, b: 1, a: 1}
           InitialScale: {x: 0.4, y: 0.4, z: 0.5}
@@ -764,14 +734,7 @@ MonoBehaviour:
               m_RotationOrder: 4
             m_ConstantMin: 0
             m_ConstantMax: 5
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 1
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 3
+      - BehaviourType: 3
         InfiniteDuration: 0
         BehaviourEnterValue: 18
         BehaviourExitValue: 1
@@ -787,6 +750,7 @@ MonoBehaviour:
         InnerPointsDist: 0.4
         Spin: 1
         SpinSpeed: 50
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 0
         ShootRotation: 0
         ProjectileCount: 5
@@ -902,14 +866,7 @@ MonoBehaviour:
               m_RotationOrder: 4
             m_ConstantMin: 0
             m_ConstantMax: 5
-      - IsCircle: 1
-        IsPolygon: 0
-        IsStar: 0
-        ShowEnterValue: 1
-        ShowExitValue: 1
-        ShowInfiniteDuration: 0
-        OldZoneCount: 1
-        BehaviourType: 3
+      - BehaviourType: 3
         InfiniteDuration: 0
         BehaviourEnterValue: 18
         BehaviourExitValue: 1
@@ -925,6 +882,7 @@ MonoBehaviour:
         InnerPointsDist: 0.4
         Spin: 1
         SpinSpeed: -50
+        RotationFollowsAim: 0
         AimAtClosestPlayer: 0
         ShootRotation: 0
         ProjectileCount: 5

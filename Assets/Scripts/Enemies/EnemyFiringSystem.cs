@@ -437,7 +437,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         float x = _closestPlayer.transform.position.x - transform.position.x;
                         float y = _closestPlayer.transform.position.y - transform.position.y;
                         float angle =0;
-                        if (x !=0 && y != 0 && x!=float.NaN && y!=float.NaN) //checking for NaN since for some fucking reason it can happen
+                        if (!(x == 0 && y == 0) && x!=float.NaN && y!=float.NaN) //checking for NaN since for some fucking reason it can happen
                         {
                             angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
                         }
@@ -461,7 +461,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         for (int i = 0; i < _copy.Length; i++)
                         {
                             Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
-                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
+                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos/ _Zone.CenterDistance : system.transform.right);
                             _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
                             newPos += system.transform.position;
                             _copy[i].position = new(newPos.x, newPos.y, 0);
@@ -491,7 +491,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         float x = _closestPlayer.transform.position.x - transform.position.x;
                         float y = _closestPlayer.transform.position.y - transform.position.y;
                         float angle = 0;
-                        if (x != 0 && y != 0 && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
+                        if (!(x == 0 && y == 0) && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
                         {
                             angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
                         }
@@ -515,7 +515,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         for (int i = 0; i < _copy.Length; i++)
                         {
                             Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
-                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
+                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos/ _Zone.CenterDistance : system.transform.right);
                             _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
                             newPos += system.transform.position;
                             _copy[i].position = new(newPos.x, newPos.y, 0);
@@ -546,7 +546,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         float x = _closestPlayer.transform.position.x - transform.position.x;
                         float y = _closestPlayer.transform.position.y - transform.position.y;
                         float angle = 0;
-                        if (x != 0 && y != 0 && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
+                        if (!(x == 0 && y == 0) && x != float.NaN && y != float.NaN) //checking for NaN since for some fucking reason it can happen
                         {
                             angle = Mathf.Rad2Deg * Mathf.Atan2(y, x);
                         }
@@ -570,7 +570,7 @@ public class EnemyFiringSystem : MonoBehaviour
                         for (int i = 0; i < _copy.Length; i++)
                         {
                             Vector3 newPos = _copy[i].position.x * system.transform.right + _copy[i].position.y * system.transform.up;
-                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos : system.transform.right);
+                            _copy[i].velocity = _Zone.ProjectileParameters.InitialVelocityStrength * (_Zone.CircleCenteredVelocity ? newPos/ _Zone.CenterDistance : system.transform.right);
                             _copy[i].rotation3D = new(0, 0, Mathf.Rad2Deg * Mathf.Atan2(newPos.normalized.y, newPos.normalized.x));
                             newPos += system.transform.position;
                             _copy[i].position = new(newPos.x, newPos.y, 0);

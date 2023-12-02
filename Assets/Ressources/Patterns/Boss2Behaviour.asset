@@ -912,7 +912,7 @@ MonoBehaviour:
                 inWeight: 0
                 outWeight: 0
               - serializedVersion: 3
-                time: 0.8605411
+                time: 0.1
                 value: 1
                 inSlope: 0
                 outSlope: -Infinity
@@ -1034,20 +1034,20 @@ MonoBehaviour:
         BehaviourExitValue: 1
         patternType: 2
         CircleCenteredVelocity: 1
-        CenterDistance: 0.1
+        CenterDistance: 0.4
         StartAngle: -180
         EndAngle: 180
         ZoneCount: 1
         RandomPosition: 0
         Vertices: 8
         Limbs: 6
-        InnerPointsDist: 0.4
+        InnerPointsDist: 0.15
         Spin: 0
         SpinSpeed: -50
         RotationFollowsAim: 0
         AimAtClosestPlayer: 0
         ShootRotation: 0
-        ProjectileCount: 3
+        ProjectileCount: 4
         SpawnFrequency: 0.4
         ProjectileParameters:
           Texture: {fileID: 21300000, guid: 47aa97b96c535884cb6033014cb4e331, type: 3}
@@ -1124,7 +1124,7 @@ MonoBehaviour:
             m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
-          VariableRotation: 1
+          VariableRotation: 0
           RotationOverTime:
             m_Mode: 0
             m_CurveMultiplier: 0
